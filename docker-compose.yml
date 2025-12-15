@@ -8,17 +8,33 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      # Proxmox
       - PROXMOX_HOST=${PROXMOX_HOST}
       - PROXMOX_TOKEN_ID=${PROXMOX_TOKEN_ID}
       - PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
+      # Jellyfin
       - JELLYFIN_URL=${JELLYFIN_URL}
       - JELLYFIN_API_KEY=${JELLYFIN_API_KEY}
       - JELLYFIN_USER_ID=${JELLYFIN_USER_ID}
+      # Jellyseerr
       - JELLYSEERR_URL=${JELLYSEERR_URL}
       - JELLYSEERR_API_KEY=${JELLYSEERR_API_KEY}
+      # Pyrodactyl (Game Servers)
+      - PYRODACTYL_URL=${PYRODACTYL_URL}
+      - PYRODACTYL_API_KEY=${PYRODACTYL_API_KEY}
+      # Portainer (Containers)
+      - PORTAINER_URL=${PORTAINER_URL}
+      - PORTAINER_ACCESS_TOKEN=${PORTAINER_ACCESS_TOKEN}
+      - PORTAINER_ENDPOINT_ID=${PORTAINER_ENDPOINT_ID}
+      # TVDB (optional)
+      - TVDB_API_KEY=${TVDB_API_KEY}
+      - TVDB_PIN=${TVDB_PIN}
+      # External URLs for links
       - EXTERNAL_PROXMOX_URL=${EXTERNAL_PROXMOX_URL}
       - EXTERNAL_JELLYFIN_URL=${EXTERNAL_JELLYFIN_URL}
       - EXTERNAL_JELLYSEERR_URL=${EXTERNAL_JELLYSEERR_URL}
+      - EXTERNAL_PYRODACTYL_URL=${EXTERNAL_PYRODACTYL_URL}
+      - EXTERNAL_PORTAINER_URL=${EXTERNAL_PORTAINER_URL}
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/" ]
