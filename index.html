@@ -13,35 +13,6 @@
 </head>
 
 <body>
-    <!-- Theme Toggle -->
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode">
-        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-    </button>
-
-    <!-- Edit Mode Toggle -->
-    <button id="edit-toggle" class="edit-toggle" aria-label="Edit dashboard layout" title="Edit Dashboard">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-        </svg>
-    </button>
-
     <!-- Notification Container -->
     <div id="notification-container" class="notification-container"></div>
 
@@ -50,12 +21,59 @@
         <div class="header-content">
             <div class="logo-container">
                 <img src="Logo's/gks-high-resolution-logo-transparent.png" alt="GKS Logo" class="logo">
-                <h1 class="site-title">GKS Home</h1>
             </div>
-            <nav class="nav">
-                <a href="#" class="nav-link active" data-section="dashboard">Dashboard</a>
-                <a href="#" class="nav-link" data-section="settings">Settings</a>
-            </nav>
+            <div class="header-right">
+                <nav class="nav">
+                    <a href="#" id="jellyfin-header-link" class="nav-btn jellyfin-btn" target="_blank"
+                        title="Open Jellyfin">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <span>Jellyfin</span>
+                    </a>
+                    <a href="#" id="jellyseerr-header-link" class="nav-btn jellyseerr-btn" target="_blank"
+                        title="Open Jellyseerr">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <span>Jellyseerr</span>
+                    </a>
+                </nav>
+                <div class="header-actions">
+                    <button id="edit-toggle" class="edit-toggle" aria-label="Edit dashboard layout"
+                        title="Edit Dashboard">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode"
+                        title="Toggle Theme">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -173,36 +191,11 @@
                 </div>
             </div>
         </div>
-
-        <!-- Settings Panel (hidden by default) -->
-        <div id="settings" class="settings-panel hidden">
-            <div class="settings-card">
-                <h2>Dashboard Settings</h2>
-                <p class="settings-info">Widget positions are saved automatically when you drag and drop them.</p>
-
-                <div class="settings-section">
-                    <h3>Appearance</h3>
-                    <div class="setting-row">
-                        <label for="theme-select">Theme</label>
-                        <select id="theme-select">
-                            <option value="dark">Dark</option>
-                            <option value="light">Light</option>
-                            <option value="auto">System</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="settings-section">
-                    <h3>Widget Layout</h3>
-                    <button id="reset-layout" class="btn btn-secondary">Reset to Default Layout</button>
-                </div>
-            </div>
-        </div>
     </main>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>GKS Home Dashboard &copy; 2025</p>
+        <p>GKS &copy; 2025</p>
     </footer>
 
     <!-- Scripts -->

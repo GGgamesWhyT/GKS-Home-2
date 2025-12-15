@@ -112,11 +112,8 @@ body::before {
 
 /* ===== Theme Toggle ===== */
 .theme-toggle {
-    position: fixed;
-    top: var(--spacing-lg);
-    right: var(--spacing-lg);
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -127,7 +124,6 @@ body::before {
     color: var(--text-primary);
     backdrop-filter: blur(10px);
     transition: var(--transition-normal);
-    z-index: 1000;
 }
 
 .theme-toggle:hover {
@@ -223,6 +219,19 @@ body::before {
     top: 0;
     z-index: 100;
     backdrop-filter: blur(10px);
+    animation: headerSlideDown 0.5s ease;
+}
+
+@keyframes headerSlideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .header-content {
@@ -242,6 +251,11 @@ body::before {
 .logo {
     height: 48px;
     width: auto;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
 }
 
 .site-title {
@@ -255,7 +269,55 @@ body::before {
 
 .nav {
     display: flex;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-md);
+}
+
+/* Nav buttons for Jellyfin/Jellyseerr */
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: var(--transition-normal);
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+}
+
+.nav-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.nav-btn svg {
+    flex-shrink: 0;
+}
+
+/* Jellyfin button - purple theme */
+.jellyfin-btn {
+    color: #a855f7;
+    border-color: rgba(168, 85, 247, 0.3);
+}
+
+.jellyfin-btn:hover {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: #a855f7;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+}
+
+/* Jellyseerr button - yellow/gold theme */
+.jellyseerr-btn {
+    color: #eab308;
+    border-color: rgba(234, 179, 8, 0.3);
+}
+
+.jellyseerr-btn:hover {
+    background: rgba(234, 179, 8, 0.1);
+    border-color: #eab308;
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
 }
 
 .nav-link {
@@ -276,6 +338,19 @@ body::before {
     color: var(--accent-primary);
 }
 
+/* Header right section with nav and actions */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
 /* ===== Main Content ===== */
 .main {
     max-width: 1400px;
@@ -287,8 +362,21 @@ body::before {
 /* ===== Dashboard Grid ===== */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(150px, auto);
     gap: var(--spacing-lg);
+}
+
+@media (max-width: 1200px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ===== Widget Styles ===== */
@@ -298,14 +386,49 @@ body::before {
     border-radius: var(--radius-lg);
     backdrop-filter: blur(10px);
     overflow: hidden;
-    transition: var(--transition-normal);
-    cursor: grab;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: default;
+    animation: widgetFadeIn 0.6s ease forwards;
+    opacity: 0;
+}
+
+/* Staggered animation delays for widgets */
+.widget:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.widget:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.widget:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.widget:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.widget:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+@keyframes widgetFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .widget:hover {
     border-color: var(--accent-primary);
-    box-shadow: var(--shadow-glow);
-    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
+    transform: translateY(-3px);
 }
 
 .widget.dragging {
@@ -395,6 +518,7 @@ body::before {
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
+    overflow: visible;
 }
 
 /* ===== Loading Spinner ===== */
@@ -488,11 +612,13 @@ body::before {
     flex-direction: row;
     gap: var(--spacing-md);
     overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: var(--spacing-sm);
+    overflow-y: visible;
+    padding: var(--spacing-sm) var(--spacing-xs);
+    padding-bottom: var(--spacing-md);
     scrollbar-width: thin;
     scrollbar-color: var(--accent-primary) var(--bg-tertiary);
-    min-height: 220px;
+    min-height: 240px;
+    margin: calc(-1 * var(--spacing-sm)) calc(-1 * var(--spacing-xs));
 }
 
 .media-scroll-container::-webkit-scrollbar {
@@ -522,13 +648,20 @@ body::before {
     flex-shrink: 0;
     width: 140px;
     cursor: pointer;
-    transition: var(--transition-normal);
     text-decoration: none;
     color: inherit;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: var(--radius-md);
+    perspective: 500px;
 }
 
 .media-card:hover {
-    transform: scale(1.05);
+    transform: scale(1.03) rotateY(-5deg) rotateX(3deg);
+    z-index: 10;
+}
+
+.media-card:hover .media-poster {
+    box-shadow: 0 8px 20px rgba(0, 212, 170, 0.25);
 }
 
 .media-poster {
@@ -538,12 +671,14 @@ body::before {
     border-radius: var(--radius-md);
     overflow: hidden;
     margin-bottom: var(--spacing-sm);
+    transition: box-shadow 0.3s ease;
 }
 
 .media-poster img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: var(--radius-md);
 }
 
 .media-title {
@@ -573,13 +708,17 @@ body::before {
     padding: var(--spacing-sm) var(--spacing-md);
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
-    transition: var(--transition-fast);
+    transition: all 0.3s ease;
     text-decoration: none;
     color: inherit;
+    border: 1px solid transparent;
 }
 
 .request-item:hover {
     background: var(--bg-card-hover);
+    transform: translateX(5px);
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 12px rgba(0, 212, 170, 0.1);
 }
 
 .request-poster {
@@ -788,11 +927,8 @@ body::before {
 
 /* ===== Edit Mode Toggle ===== */
 .edit-toggle {
-    position: fixed;
-    top: var(--spacing-lg);
-    right: calc(var(--spacing-lg) + 52px);
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
@@ -803,7 +939,6 @@ body::before {
     color: var(--text-primary);
     backdrop-filter: blur(10px);
     transition: var(--transition-normal);
-    z-index: 1000;
 }
 
 .edit-toggle:hover {
@@ -925,4 +1060,85 @@ body.edit-mode::after {
     50% {
         opacity: 0.7;
     }
+}
+
+/* ===== Drag Ghost ===== */
+.drag-ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    opacity: 0.8;
+    background: var(--bg-card);
+    border: 2px solid var(--accent-primary);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transform: rotate(2deg);
+}
+
+/* Widget in grid */
+.widget {
+    overflow: visible;
+}
+
+/* Ensure widgets fill their grid area */
+.dashboard-grid .widget {
+    min-height: 100%;
+}
+
+/* ===== Widget Placeholder ===== */
+.widget-placeholder {
+    background: var(--bg-tertiary);
+    border: 2px dashed var(--accent-primary);
+    border-radius: var(--radius-lg);
+    opacity: 0.5;
+    min-height: 150px;
+}
+
+/* Drop indicators */
+.widget.drag-over {
+    position: relative;
+}
+
+.widget.drag-before::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -8px;
+    width: 4px;
+    height: 100%;
+    background: var(--accent-primary);
+    border-radius: 2px;
+    animation: dropIndicatorPulse 0.5s ease-in-out infinite;
+}
+
+.widget.drag-after::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -8px;
+    width: 4px;
+    height: 100%;
+    background: var(--accent-primary);
+    border-radius: 2px;
+    animation: dropIndicatorPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes dropIndicatorPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Dragging widget styles */
+body.edit-mode .widget.dragging {
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transform: rotate(2deg);
+    cursor: grabbing;
 }
