@@ -1,5 +1,5 @@
 /**
- * Proxmox Widget - Displays cluster and node statistics
+ * Proxmox Widget - Displays cluster and node statisticsdsxfdsf
  */
 
 class ProxmoxWidget {
