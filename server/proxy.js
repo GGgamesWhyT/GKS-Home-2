@@ -31,6 +31,8 @@ app.get('/api/config', (req, res) => {
             proxmox: process.env.EXTERNAL_PROXMOX_URL || process.env.PROXMOX_HOST || '',
             jellyfin: process.env.EXTERNAL_JELLYFIN_URL || process.env.JELLYFIN_URL || '',
             jellyseerr: process.env.EXTERNAL_JELLYSEERR_URL || process.env.JELLYSEERR_URL || '',
+            pyrodactyl: process.env.EXTERNAL_PYRODACTYL_URL || process.env.PYRODACTYL_URL || '',
+            portainer: process.env.EXTERNAL_PORTAINER_URL || process.env.PORTAINER_URL || '',
         }
     });
 });
@@ -389,6 +391,148 @@ app.get('/api/tvdb/series/:id/artworks', async (req, res) => {
         res.json({ artworks });
     } catch (error) {
         console.error('TVDB error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ===== Pyrodactyl API Routes =====
+app.get('/api/pyrodactyl/servers', async (req, res) => {
+    try {
+        const baseUrl = process.env.PYRODACTYL_URL;
+        const apiKey = process.env.PYRODACTYL_API_KEY;
+
+        if (!baseUrl || !apiKey) {
+            return res.status(500).json({ error: 'Pyrodactyl not configured' });
+        }
+
+        // Use httpsAgent if URL is HTTPS
+        const fetchOptions = {
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        };
+        if (baseUrl.startsWith('https')) {
+            fetchOptions.agent = httpsAgent;
+        }
+
+        // Get list of servers
+        const response = await fetch(`${baseUrl}/api/client`, fetchOptions);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Pyrodactyl error response:', errorText);
+            throw new Error(`Pyrodactyl API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Transform servers with resource usage
+        const servers = await Promise.all((data.data || []).map(async (server) => {
+            const serverData = server.attributes || server;
+
+            // Try to get resource usage
+            let resourceAttrs = {};
+            let allocation = null;
+
+            try {
+                const resourceRes = await fetch(
+                    `${baseUrl}/api/client/servers/${serverData.identifier}/resources`,
+                    fetchOptions
+                );
+                if (resourceRes.ok) {
+                    const resourceData = await resourceRes.json();
+                    // Pterodactyl returns: { attributes: { current_state: "running", resources: {...} } }
+                    resourceAttrs = resourceData.attributes || {};
+                    console.log(`Server ${serverData.name} resources:`, JSON.stringify(resourceAttrs, null, 2));
+                }
+            } catch (e) {
+                console.warn(`Failed to fetch resources for server ${serverData.identifier}`);
+            }
+
+            // Get allocation (connection info)
+            if (serverData.relationships?.allocations?.data?.[0]) {
+                const alloc = serverData.relationships.allocations.data[0].attributes;
+                allocation = {
+                    ip: alloc.ip_alias || alloc.ip,
+                    port: alloc.port,
+                };
+            }
+
+            // Extract resources - they're nested inside attributes.resources
+            const resources = resourceAttrs.resources || {};
+
+            // Status is at attributes.current_state level
+            const currentState = resourceAttrs.current_state || 'offline';
+
+            return {
+                identifier: serverData.identifier,
+                name: serverData.name,
+                description: serverData.description,
+                status: currentState,
+                resources: {
+                    cpu: resources.cpu_absolute || 0,
+                    memory: resources.memory_bytes || 0,
+                    disk: resources.disk_bytes || 0,
+                },
+                limits: {
+                    // Disk limit of 0 means unlimited - pass it through
+                    memory: (serverData.limits?.memory || 0) * 1048576,
+                    disk: (serverData.limits?.disk || 0) * 1048576,
+                },
+                allocation,
+            };
+        }));
+
+        // Debug: Log what we're sending to frontend
+        console.log('Pyrodactyl servers response:', JSON.stringify(servers, null, 2));
+
+        res.json({ servers });
+    } catch (error) {
+        console.error('Pyrodactyl error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ===== Portainer API Routes =====
+app.get('/api/portainer/containers', async (req, res) => {
+    try {
+        const baseUrl = process.env.PORTAINER_URL;
+        const accessToken = process.env.PORTAINER_ACCESS_TOKEN;
+        const endpointId = process.env.PORTAINER_ENDPOINT_ID || '1';
+
+        if (!baseUrl || !accessToken) {
+            return res.status(500).json({ error: 'Portainer not configured' });
+        }
+
+        // Use httpsAgent if URL is HTTPS
+        const fetchOptions = {
+            headers: {
+                'X-API-Key': accessToken,
+            },
+        };
+        if (baseUrl.startsWith('https')) {
+            fetchOptions.agent = httpsAgent;
+        }
+
+        // Get containers via Portainer's Docker proxy
+        const response = await fetch(
+            `${baseUrl}/api/endpoints/${endpointId}/docker/containers/json?all=true`,
+            fetchOptions
+        );
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Portainer error response:', errorText);
+            throw new Error(`Portainer API error: ${response.status}`);
+        }
+
+        const containers = await response.json();
+
+        res.json({ containers });
+    } catch (error) {
+        console.error('Portainer error:', error.message);
         res.status(500).json({ error: error.message });
     }
 });

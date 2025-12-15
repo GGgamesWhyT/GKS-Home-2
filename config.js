@@ -12,6 +12,8 @@ const CONFIG = {
         proxmox: 30000,      // 30 seconds
         jellyfin: 300000,    // 5 minutes
         jellyseerr: 300000,  // 5 minutes
+        pyrodactyl: 60000,   // 1 minute
+        portainer: 30000,    // 30 seconds
     },
 
     // External links (for click-through)
@@ -19,6 +21,8 @@ const CONFIG = {
         proxmox: '',      // Will be set from env via backend
         jellyfin: '',     // Will be set from env via backend
         jellyseerr: '',   // Will be set from env via backend
+        pyrodactyl: '',   // Will be set from env via backend
+        portainer: '',    // Will be set from env via backend
     },
 
     // Widget display settings
