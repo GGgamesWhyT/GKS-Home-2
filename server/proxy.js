@@ -120,8 +120,9 @@ app.get('/api/jellyfin/latest', async (req, res) => {
         }
 
         // Get latest items - Only Movies and Series (not episodes) for cleaner display
+        // Include Fields for Overview, CommunityRating, and RunTimeTicks
         const response = await fetch(
-            `${baseUrl}/Users/${userId}/Items/Latest?Limit=20&IncludeItemTypes=Movie,Series&EnableImages=true&ImageTypeLimit=1`,
+            `${baseUrl}/Users/${userId}/Items/Latest?Limit=20&IncludeItemTypes=Movie,Series&EnableImages=true&ImageTypeLimit=1&Fields=Overview,CommunityRating,RunTimeTicks`,
             fetchOptions
         );
 
@@ -139,6 +140,9 @@ app.get('/api/jellyfin/latest', async (req, res) => {
             Name: item.Name,
             Type: item.Type,
             ProductionYear: item.ProductionYear,
+            Overview: item.Overview || '',
+            RunTimeTicks: item.RunTimeTicks,
+            CommunityRating: item.CommunityRating,
             ImageUrl: item.ImageTags?.Primary
                 ? `${baseUrl}/Items/${item.Id}/Images/Primary?maxHeight=300&quality=90`
                 : null,

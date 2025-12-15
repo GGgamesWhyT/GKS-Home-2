@@ -22,9 +22,20 @@ class ProxmoxWidget {
             return;
         }
 
+        // Sort nodes in specific order: proxmox, proxmox2, proxmox3
+        const nodeOrder = ['proxmox', 'proxmox2', 'proxmox3'];
+        const sortedNodes = [...data.nodes].sort((a, b) => {
+            const indexA = nodeOrder.indexOf(a.node.toLowerCase());
+            const indexB = nodeOrder.indexOf(b.node.toLowerCase());
+            // If node not in order list, put at end
+            const orderA = indexA === -1 ? 999 : indexA;
+            const orderB = indexB === -1 ? 999 : indexB;
+            return orderA - orderB;
+        });
+
         const html = `
             <div class="node-grid">
-                ${data.nodes.map(node => this.renderNode(node)).join('')}
+                ${sortedNodes.map(node => this.renderNode(node)).join('')}
             </div>
         `;
 

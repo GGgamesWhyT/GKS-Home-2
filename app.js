@@ -18,10 +18,54 @@ class Dashboard {
         this.initEditMode();
         this.restoreWidgetLayout();
         this.setExternalLinks();
+        this.setGreeting();
         await this.initWidgets();
         this.startRefreshTimers();
         window.dashboard = this;
         console.log('GKS Home Dashboard initialized');
+    }
+
+    // ===== Greeting =====
+    setGreeting() {
+        this.updateGreeting();
+        // Update time every second
+        setInterval(() => this.updateTime(), 1000);
+    }
+
+    updateGreeting() {
+        const hour = new Date().getHours();
+        let greeting = 'Welcome';
+        let emoji = '👋';
+
+        if (hour >= 5 && hour < 12) {
+            greeting = 'Good morning';
+            emoji = '☀️';
+        } else if (hour >= 12 && hour < 17) {
+            greeting = 'Good afternoon';
+            emoji = '🌤️';
+        } else if (hour >= 17 && hour < 21) {
+            greeting = 'Good evening';
+            emoji = '🌅';
+        } else {
+            greeting = 'Good night';
+            emoji = '🌙';
+        }
+
+        const greetingEl = document.getElementById('greeting');
+        if (greetingEl) {
+            greetingEl.textContent = `${emoji} ${greeting}`;
+        }
+        this.updateTime();
+    }
+
+    updateTime() {
+        const timeEl = document.getElementById('current-time');
+        if (timeEl) {
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const date = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+            timeEl.textContent = `${date} • ${time}`;
+        }
     }
 
     // ===== Theme Management =====

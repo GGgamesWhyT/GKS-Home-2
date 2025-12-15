@@ -95,19 +95,41 @@ body {
     overflow-x: hidden;
 }
 
-/* Background gradient effect */
+/* Animated background gradient effect - smooth version */
 body::before {
     content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
     background:
-        radial-gradient(ellipse at 20% 20%, rgba(0, 212, 170, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 80%, rgba(0, 184, 148, 0.05) 0%, transparent 50%);
+        radial-gradient(ellipse at 30% 30%, rgba(0, 212, 170, 0.08) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 70%, rgba(0, 184, 148, 0.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
+    animation: gradientMove 30s ease-in-out infinite;
+}
+
+@keyframes gradientMove {
+
+    0%,
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    25% {
+        transform: translate(5%, 5%) rotate(2deg);
+    }
+
+    50% {
+        transform: translate(0, 10%) rotate(0deg);
+    }
+
+    75% {
+        transform: translate(-5%, 5%) rotate(-2deg);
+    }
 }
 
 /* ===== Theme Toggle ===== */
@@ -256,6 +278,61 @@ body::before {
 
 .logo:hover {
     transform: scale(1.05);
+}
+
+/* Greeting Widget */
+.greeting-widget {
+    grid-column: 1 / -1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: widgetFadeIn 0.6s ease forwards;
+    opacity: 0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.greeting-widget:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-primary);
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
+}
+
+.greeting-text {
+    font-size: 1.5rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.current-time {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 600px) {
+    .greeting-widget {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+        padding: var(--spacing-md);
+    }
+
+    .greeting-text {
+        font-size: 1.2rem;
+    }
+
+    .current-time {
+        font-size: 1rem;
+    }
 }
 
 .site-title {
@@ -739,9 +816,10 @@ body::before {
     aspect-ratio: 2/3;
     background: var(--bg-tertiary);
     border-radius: var(--radius-md);
-    overflow: hidden;
+    overflow: visible;
     margin-bottom: var(--spacing-sm);
     transition: box-shadow 0.3s ease;
+    position: relative;
 }
 
 .media-poster img {
@@ -762,6 +840,51 @@ body::before {
 .media-year {
     font-size: 0.75rem;
     color: var(--text-muted);
+}
+
+/* Media Tooltip - appears on hover */
+.media-tooltip {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.8) 50%, transparent 100%);
+    padding: var(--spacing-md);
+    padding-top: var(--spacing-xl);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    z-index: 20;
+}
+
+.media-card:hover .media-tooltip {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.media-tooltip-title {
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-bottom: var(--spacing-xs);
+    color: white;
+}
+
+.media-tooltip-meta {
+    font-size: 0.7rem;
+    color: var(--accent-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.media-tooltip-overview {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* ===== Request List (Jellyseerr) ===== */
