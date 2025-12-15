@@ -779,4 +779,150 @@ body::before {
         top: var(--spacing-md);
         right: var(--spacing-md);
     }
+
+    .edit-toggle {
+        top: var(--spacing-md);
+        right: calc(var(--spacing-md) + 52px);
+    }
+}
+
+/* ===== Edit Mode Toggle ===== */
+.edit-toggle {
+    position: fixed;
+    top: var(--spacing-lg);
+    right: calc(var(--spacing-lg) + 52px);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    backdrop-filter: blur(10px);
+    transition: var(--transition-normal);
+    z-index: 1000;
+}
+
+.edit-toggle:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.edit-toggle.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.edit-toggle.active:hover {
+    background: var(--accent-secondary);
+}
+
+/* ===== Edit Mode Styles ===== */
+body.edit-mode .widget {
+    cursor: grab;
+    border-style: dashed;
+    animation: editPulse 2s ease-in-out infinite;
+}
+
+body.edit-mode .widget:hover {
+    transform: translateY(-4px);
+}
+
+body.edit-mode .widget.dragging {
+    cursor: grabbing;
+    opacity: 0.7;
+    transform: scale(1.02);
+}
+
+body.edit-mode .widget.resizing {
+    opacity: 0.9;
+}
+
+@keyframes editPulse {
+
+    0%,
+    100% {
+        border-color: var(--accent-primary);
+    }
+
+    50% {
+        border-color: var(--accent-secondary);
+    }
+}
+
+/* Default state - no drag/resize when not in edit mode */
+body:not(.edit-mode) .widget {
+    cursor: default;
+}
+
+body:not(.edit-mode) .widget:hover {
+    transform: none;
+}
+
+body:not(.edit-mode) .resize-handle {
+    display: none;
+}
+
+/* ===== Resize Handle ===== */
+.resize-handle {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    cursor: se-resize;
+    color: var(--text-muted);
+    opacity: 0;
+    transition: var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+body.edit-mode .widget {
+    position: relative;
+}
+
+body.edit-mode .resize-handle {
+    opacity: 0.5;
+}
+
+body.edit-mode .widget:hover .resize-handle {
+    opacity: 1;
+    color: var(--accent-primary);
+}
+
+/* Edit mode indicator overlay */
+body.edit-mode::after {
+    content: 'EDIT MODE';
+    position: fixed;
+    top: 70px;
+    right: var(--spacing-lg);
+    background: var(--accent-primary);
+    color: var(--bg-primary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    z-index: 999;
+    animation: editBadgePulse 1s ease-in-out infinite;
+}
+
+@keyframes editBadgePulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }

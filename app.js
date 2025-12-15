@@ -7,6 +7,8 @@ class Dashboard {
         this.widgets = new Map();
         this.refreshTimers = new Map();
         this.draggedWidget = null;
+        this.editMode = false;
+        this.resizing = null;
     }
 
     async init() {
@@ -19,11 +21,12 @@ class Dashboard {
         // Initialize navigation
         this.initNavigation();
 
-        // Initialize drag and drop for widgets
-        this.initDragAndDrop();
+        // Initialize edit mode
+        this.initEditMode();
 
-        // Restore widget positions
+        // Restore widget positions and sizes
         this.restoreWidgetPositions();
+        this.restoreWidgetSizes();
 
         // Set external links
         this.setExternalLinks();
@@ -36,6 +39,9 @@ class Dashboard {
 
         // Settings handlers
         this.initSettings();
+
+        // Make dashboard globally available
+        window.dashboard = this;
 
         console.log('GKS Home Dashboard initialized');
     }
@@ -86,6 +92,175 @@ class Dashboard {
                 document.getElementById('dashboard').classList.toggle('hidden', section !== 'dashboard');
                 document.getElementById('settings').classList.toggle('hidden', section !== 'settings');
             });
+        });
+    }
+
+    // ===== Edit Mode =====
+    initEditMode() {
+        const editToggle = document.getElementById('edit-toggle');
+        if (!editToggle) return;
+
+        editToggle.addEventListener('click', () => {
+            this.toggleEditMode();
+        });
+
+        // Initialize resize handles and drag functionality
+        this.initWidgetControls();
+    }
+
+    toggleEditMode() {
+        this.editMode = !this.editMode;
+        document.body.classList.toggle('edit-mode', this.editMode);
+
+        const editToggle = document.getElementById('edit-toggle');
+        if (editToggle) {
+            editToggle.classList.toggle('active', this.editMode);
+            editToggle.title = this.editMode ? 'Exit Edit Mode' : 'Edit Dashboard';
+        }
+
+        // Update widget draggable state
+        const widgets = document.querySelectorAll('.widget');
+        widgets.forEach(widget => {
+            widget.setAttribute('draggable', this.editMode ? 'true' : 'false');
+        });
+
+        if (this.editMode) {
+            NotificationManager.info('Edit mode: Drag to move, resize from corners');
+        } else {
+            // Save positions and sizes when exiting edit mode
+            this.saveWidgetPositions();
+            this.saveWidgetSizes();
+            NotificationManager.success('Layout saved');
+        }
+    }
+
+    initWidgetControls() {
+        const widgets = document.querySelectorAll('.widget');
+
+        widgets.forEach(widget => {
+            // Add resize handle
+            if (!widget.querySelector('.resize-handle')) {
+                const resizeHandle = document.createElement('div');
+                resizeHandle.className = 'resize-handle';
+                resizeHandle.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M22 22H20V20H22V22ZM22 18H20V16H22V18ZM18 22H16V20H18V22ZM22 14H20V12H22V14ZM18 18H16V16H18V18ZM14 22H12V20H14V22ZM22 10H20V8H22V10ZM18 14H16V12H18V14ZM14 18H12V16H14V18ZM10 22H8V20H10V22Z"/>
+                    </svg>
+                `;
+                widget.appendChild(resizeHandle);
+
+                // Resize functionality
+                this.initResize(widget, resizeHandle);
+            }
+
+            // Drag and drop
+            widget.addEventListener('dragstart', (e) => {
+                if (!this.editMode) {
+                    e.preventDefault();
+                    return;
+                }
+                this.draggedWidget = widget;
+                widget.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            widget.addEventListener('dragend', () => {
+                widget.classList.remove('dragging');
+                this.draggedWidget = null;
+                if (this.editMode) {
+                    this.saveWidgetPositions();
+                }
+            });
+
+            widget.addEventListener('dragover', (e) => {
+                if (!this.editMode) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+
+                if (this.draggedWidget && this.draggedWidget !== widget) {
+                    widget.classList.add('drag-over');
+                }
+            });
+
+            widget.addEventListener('dragleave', () => {
+                widget.classList.remove('drag-over');
+            });
+
+            widget.addEventListener('drop', (e) => {
+                if (!this.editMode) return;
+                e.preventDefault();
+                widget.classList.remove('drag-over');
+
+                if (this.draggedWidget && this.draggedWidget !== widget) {
+                    const parent = widget.parentNode;
+                    const draggedIndex = [...parent.children].indexOf(this.draggedWidget);
+                    const targetIndex = [...parent.children].indexOf(widget);
+
+                    if (draggedIndex < targetIndex) {
+                        parent.insertBefore(this.draggedWidget, widget.nextSibling);
+                    } else {
+                        parent.insertBefore(this.draggedWidget, widget);
+                    }
+                }
+            });
+        });
+
+        // Set initial draggable state
+        widgets.forEach(widget => {
+            widget.setAttribute('draggable', 'false');
+        });
+    }
+
+    initResize(widget, handle) {
+        let startX, startY, startWidth, startHeight;
+
+        const onMouseDown = (e) => {
+            if (!this.editMode) return;
+            e.preventDefault();
+            e.stopPropagation();
+
+            this.resizing = widget;
+            startX = e.clientX;
+            startY = e.clientY;
+            startWidth = widget.offsetWidth;
+            startHeight = widget.offsetHeight;
+
+            widget.classList.add('resizing');
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        };
+
+        const onMouseMove = (e) => {
+            if (!this.resizing) return;
+
+            const deltaX = e.clientX - startX;
+            const deltaY = e.clientY - startY;
+
+            const newWidth = Math.max(300, startWidth + deltaX);
+            const newHeight = Math.max(150, startHeight + deltaY);
+
+            widget.style.width = `${newWidth}px`;
+            widget.style.height = `${newHeight}px`;
+            widget.style.minHeight = `${newHeight}px`;
+        };
+
+        const onMouseUp = () => {
+            if (this.resizing) {
+                this.resizing.classList.remove('resizing');
+                this.resizing = null;
+                this.saveWidgetSizes();
+            }
+            document.removeEventListener('mousemove', onMouseMove);
+            document.removeEventListener('mouseup', onMouseUp);
+        };
+
+        handle.addEventListener('mousedown', onMouseDown);
+
+        // Touch support
+        handle.addEventListener('touchstart', (e) => {
+            if (!this.editMode) return;
+            const touch = e.touches[0];
+            onMouseDown({ clientX: touch.clientX, clientY: touch.clientY, preventDefault: () => { }, stopPropagation: () => { } });
         });
     }
 
@@ -175,57 +350,7 @@ class Dashboard {
         }
     }
 
-    // ===== Drag and Drop =====
-    initDragAndDrop() {
-        const widgets = document.querySelectorAll('.widget[draggable="true"]');
-        const grid = document.querySelector('.dashboard-grid');
-
-        widgets.forEach(widget => {
-            widget.addEventListener('dragstart', (e) => {
-                this.draggedWidget = widget;
-                widget.classList.add('dragging');
-                e.dataTransfer.effectAllowed = 'move';
-            });
-
-            widget.addEventListener('dragend', () => {
-                widget.classList.remove('dragging');
-                this.draggedWidget = null;
-                this.saveWidgetPositions();
-            });
-
-            widget.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                e.dataTransfer.dropEffect = 'move';
-
-                if (this.draggedWidget && this.draggedWidget !== widget) {
-                    widget.classList.add('drag-over');
-                }
-            });
-
-            widget.addEventListener('dragleave', () => {
-                widget.classList.remove('drag-over');
-            });
-
-            widget.addEventListener('drop', (e) => {
-                e.preventDefault();
-                widget.classList.remove('drag-over');
-
-                if (this.draggedWidget && this.draggedWidget !== widget) {
-                    // Swap positions in the DOM
-                    const parent = widget.parentNode;
-                    const draggedIndex = [...parent.children].indexOf(this.draggedWidget);
-                    const targetIndex = [...parent.children].indexOf(widget);
-
-                    if (draggedIndex < targetIndex) {
-                        parent.insertBefore(this.draggedWidget, widget.nextSibling);
-                    } else {
-                        parent.insertBefore(this.draggedWidget, widget);
-                    }
-                }
-            });
-        });
-    }
-
+    // ===== Save/Restore Widget Layout =====
     saveWidgetPositions() {
         const grid = document.querySelector('.dashboard-grid');
         const positions = [...grid.children].map(widget => widget.dataset.widget);
@@ -252,11 +377,50 @@ class Dashboard {
         }
     }
 
+    saveWidgetSizes() {
+        const widgets = document.querySelectorAll('.widget');
+        const sizes = {};
+
+        widgets.forEach(widget => {
+            const name = widget.dataset.widget;
+            if (widget.style.width || widget.style.height) {
+                sizes[name] = {
+                    width: widget.style.width,
+                    height: widget.style.height,
+                };
+            }
+        });
+
+        localStorage.setItem(CONFIG.storage.widgetSizes, JSON.stringify(sizes));
+    }
+
+    restoreWidgetSizes() {
+        const saved = localStorage.getItem(CONFIG.storage.widgetSizes);
+        if (!saved) return;
+
+        try {
+            const sizes = JSON.parse(saved);
+            Object.entries(sizes).forEach(([name, size]) => {
+                const widget = document.querySelector(`[data-widget="${name}"]`);
+                if (widget && size) {
+                    if (size.width) widget.style.width = size.width;
+                    if (size.height) {
+                        widget.style.height = size.height;
+                        widget.style.minHeight = size.height;
+                    }
+                }
+            });
+        } catch (e) {
+            console.warn('Could not restore widget sizes');
+        }
+    }
+
     // ===== Settings =====
     initSettings() {
         const resetBtn = document.getElementById('reset-layout');
         resetBtn.addEventListener('click', () => {
             localStorage.removeItem(CONFIG.storage.widgetPositions);
+            localStorage.removeItem(CONFIG.storage.widgetSizes);
             location.reload();
         });
     }

@@ -35,6 +35,7 @@ const CONFIG = {
     storage: {
         theme: 'gks-theme',
         widgetPositions: 'gks-widget-positions',
+        widgetSizes: 'gks-widget-sizes',
         notificationsSeen: 'gks-notifications-seen',
     },
 };
