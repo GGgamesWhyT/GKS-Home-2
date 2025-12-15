@@ -620,46 +620,164 @@ body::before {
 
 /* ===== Proxmox Widget Specific ===== */
 .node-grid {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: var(--spacing-md);
 }
 
 .node-card {
-    background: var(--bg-tertiary);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-md);
-    border: 1px solid transparent;
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(0, 212, 170, 0.03) 100%);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    border: 1px solid var(--border-color);
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .node-card:hover {
-    background: var(--bg-card-hover);
     border-color: var(--accent-primary);
-    transform: translateX(5px);
-    box-shadow: 0 4px 15px rgba(0, 212, 170, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
 }
 
 .node-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.node-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.status-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--status-online);
+    box-shadow: 0 0 12px var(--status-online);
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+.status-indicator.offline {
+    background: var(--status-offline);
+    box-shadow: 0 0 12px var(--status-offline);
+    animation: none;
 }
 
 .node-name {
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: capitalize;
+}
+
+.node-meta {
     display: flex;
+    gap: var(--spacing-sm);
+}
+
+.vm-badge,
+.uptime-badge {
+    background: var(--bg-primary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.vm-badge {
+    color: var(--accent-primary);
+}
+
+/* Circular Gauges */
+.node-gauges {
+    display: flex;
+    justify-content: space-around;
+    gap: var(--spacing-md);
+}
+
+.gauge-item {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     gap: var(--spacing-xs);
 }
 
-.status-dot {
-    width: 8px;
-    height: 8px;
+.gauge-ring {
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
-    background: var(--status-online);
-    animation: statusPulse 2s ease-in-out infinite;
-    box-shadow: 0 0 8px var(--status-online);
+    background: conic-gradient(var(--color) calc(var(--percent) * 1%),
+            var(--bg-primary) calc(var(--percent) * 1%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.gauge-ring:hover {
+    transform: scale(1.1);
+}
+
+.gauge-inner {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gauge-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.gauge-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.gauge-detail {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+/* Mobile responsive for Proxmox */
+@media (max-width: 480px) {
+    .node-gauges {
+        gap: var(--spacing-sm);
+    }
+
+    .gauge-ring {
+        width: 55px;
+        height: 55px;
+    }
+
+    .gauge-inner {
+        width: 42px;
+        height: 42px;
+    }
+
+    .gauge-value {
+        font-size: 0.75rem;
+    }
+
+    .node-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
 }
 
 @keyframes statusPulse {
@@ -676,12 +794,7 @@ body::before {
     }
 }
 
-.status-dot.offline {
-    background: var(--status-offline);
-    box-shadow: 0 0 8px var(--status-offline);
-    animation: none;
-}
-
+/* Legacy styles for backwards compatibility */
 .node-stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

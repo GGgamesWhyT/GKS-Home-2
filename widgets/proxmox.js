@@ -48,45 +48,76 @@ class ProxmoxWidget {
         const diskPercent = Math.round(((node.disk || 0) / (node.maxdisk || 1)) * 100);
         const isOnline = node.status === 'online';
 
+        // Format memory as GB
+        const memUsedGB = ((node.mem || 0) / 1073741824).toFixed(1);
+        const memTotalGB = ((node.maxmem || 0) / 1073741824).toFixed(0);
+
+        // Format disk as GB/TB
+        const diskUsedGB = ((node.disk || 0) / 1073741824).toFixed(0);
+        const diskTotalGB = ((node.maxdisk || 0) / 1073741824).toFixed(0);
+
+        // Calculate uptime if available
+        const uptime = node.uptime ? this.formatUptime(node.uptime) : '';
+
         return `
-            <div class="node-card">
+            <div class="node-card ${isOnline ? 'online' : 'offline'}">
                 <div class="node-header">
-                    <span class="node-name">
-                        <span class="status-dot ${isOnline ? '' : 'offline'}"></span>
-                        ${node.node || 'Unknown'}
-                    </span>
-                    <span class="node-status">${node.status || 'unknown'}</span>
-                </div>
-                <div class="node-stats">
-                    <div class="stat">
-                        <div class="stat-label">CPU</div>
-                        <div class="stat-value">${cpuPercent}%</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${cpuPercent}%"></div>
-                        </div>
+                    <div class="node-info">
+                        <span class="status-indicator ${isOnline ? '' : 'offline'}"></span>
+                        <span class="node-name">${node.node || 'Unknown'}</span>
                     </div>
-                    <div class="stat">
-                        <div class="stat-label">RAM</div>
-                        <div class="stat-value">${memPercent}%</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${memPercent}%"></div>
-                        </div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-label">Disk</div>
-                        <div class="stat-value">${diskPercent}%</div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${diskPercent}%"></div>
-                        </div>
+                    <div class="node-meta">
+                        ${node.vmCount !== undefined ? `<span class="vm-badge">${node.vmCount} VMs</span>` : ''}
+                        ${uptime ? `<span class="uptime-badge">⏱ ${uptime}</span>` : ''}
                     </div>
                 </div>
-                ${node.vmCount !== undefined ? `
-                    <div class="node-vms">
-                        <small>${node.vmCount} VMs running</small>
+                
+                <div class="node-gauges">
+                    <div class="gauge-item">
+                        <div class="gauge-ring" style="--percent: ${cpuPercent}; --color: ${this.getColorForPercent(cpuPercent)}">
+                            <div class="gauge-inner">
+                                <span class="gauge-value">${cpuPercent}%</span>
+                            </div>
+                        </div>
+                        <span class="gauge-label">CPU</span>
                     </div>
-                ` : ''}
+                    
+                    <div class="gauge-item">
+                        <div class="gauge-ring" style="--percent: ${memPercent}; --color: ${this.getColorForPercent(memPercent)}">
+                            <div class="gauge-inner">
+                                <span class="gauge-value">${memPercent}%</span>
+                            </div>
+                        </div>
+                        <span class="gauge-label">RAM</span>
+                        <span class="gauge-detail">${memUsedGB}/${memTotalGB}GB</span>
+                    </div>
+                    
+                    <div class="gauge-item">
+                        <div class="gauge-ring" style="--percent: ${diskPercent}; --color: ${this.getColorForPercent(diskPercent)}">
+                            <div class="gauge-inner">
+                                <span class="gauge-value">${diskPercent}%</span>
+                            </div>
+                        </div>
+                        <span class="gauge-label">Disk</span>
+                        <span class="gauge-detail">${diskUsedGB}/${diskTotalGB}GB</span>
+                    </div>
+                </div>
             </div>
         `;
+    }
+
+    getColorForPercent(percent) {
+        if (percent < 50) return 'var(--status-online)';
+        if (percent < 80) return 'var(--status-warning)';
+        return 'var(--status-offline)';
+    }
+
+    formatUptime(seconds) {
+        const days = Math.floor(seconds / 86400);
+        const hours = Math.floor((seconds % 86400) / 3600);
+        if (days > 0) return `${days}d ${hours}h`;
+        const minutes = Math.floor((seconds % 3600) / 60);
+        return `${hours}h ${minutes}m`;
     }
 
     renderError() {
