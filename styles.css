@@ -721,6 +721,33 @@ body::before {
         padding: var(--spacing-md);
     }
 
+    /* Keep sticky mode horizontal even on mobile */
+    .greeting-widget.sticky {
+        flex-direction: row;
+        text-align: left;
+        padding: var(--spacing-xs) var(--spacing-md);
+        top: 50px;
+        /* Smaller header on mobile */
+        gap: var(--spacing-sm);
+    }
+
+    .greeting-widget.sticky .greeting-content {
+        flex-direction: row;
+        gap: var(--spacing-sm);
+    }
+
+    .greeting-widget.sticky .greeting-text {
+        font-size: 0.9rem;
+    }
+
+    .greeting-widget.sticky .current-time {
+        font-size: 0.8rem;
+    }
+
+    .greeting-widget.sticky .mascot {
+        transform: scale(0.6);
+    }
+
     .greeting-content {
         flex-direction: column;
         gap: var(--spacing-sm);
@@ -841,6 +868,28 @@ body::before {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
+}
+
+/* Edit toggle button */
+.edit-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    backdrop-filter: blur(10px);
+    transition: var(--transition-normal);
+}
+
+.edit-toggle:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-primary);
+    box-shadow: var(--shadow-glow);
 }
 
 /* ===== Main Content ===== */
@@ -2396,22 +2445,30 @@ body.edit-mode .widget.dragging {
 
 /* Mobile phones */
 @media (max-width: 480px) {
+    .header {
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
     .header-content {
-        flex-wrap: wrap;
         gap: var(--spacing-xs);
     }
 
     .logo-container {
-        flex: 1;
+        flex-shrink: 0;
     }
 
     .logo {
-        height: 32px;
+        height: 28px;
     }
 
     .header-right {
-        width: 100%;
-        justify-content: space-between;
+        flex: 1;
+        justify-content: flex-end;
+        gap: var(--spacing-xs);
+    }
+
+    .nav {
+        gap: var(--spacing-xs);
     }
 
     /* Icon-only nav buttons on mobile */
@@ -2420,21 +2477,33 @@ body.edit-mode .widget.dragging {
     }
 
     .nav-btn {
-        padding: var(--spacing-sm);
+        padding: var(--spacing-xs);
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
         justify-content: center;
     }
 
     .nav-btn svg {
         margin: 0;
+        width: 16px;
+        height: 16px;
+    }
+
+    .header-actions {
+        gap: var(--spacing-xs);
     }
 
     .theme-toggle,
     .edit-toggle {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
+    }
+
+    .theme-toggle svg,
+    .edit-toggle svg {
+        width: 16px;
+        height: 16px;
     }
 
     /* Disable widget entrance animations on mobile for performance */
@@ -2533,19 +2602,40 @@ body.edit-mode .widget.dragging {
 
 /* Very small phones */
 @media (max-width: 360px) {
-    .header {
-        padding: var(--spacing-xs) var(--spacing-sm);
-    }
-
     .logo {
-        height: 28px;
+        height: 24px;
     }
 
     .nav-btn,
     .theme-toggle,
     .edit-toggle {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
+    }
+
+    .nav-btn svg,
+    .theme-toggle svg,
+    .edit-toggle svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    /* Adjust sticky greeting for very small screens */
+    .greeting-widget.sticky {
+        top: 42px;
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+
+    .greeting-widget.sticky .greeting-text {
+        font-size: 0.8rem;
+    }
+
+    .greeting-widget.sticky .current-time {
+        font-size: 0.7rem;
+    }
+
+    .greeting-widget.sticky .mascot {
+        transform: scale(0.5);
     }
 
     .media-card {
