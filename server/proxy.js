@@ -28,9 +28,9 @@ app.use(express.static(path.join(__dirname, '..')));
 app.get('/api/config', (req, res) => {
     res.json({
         externalLinks: {
-            proxmox: process.env.PROXMOX_URL || '',
-            jellyfin: process.env.JELLYFIN_URL || '',
-            jellyseerr: process.env.JELLYSEERR_URL || '',
+            proxmox: process.env.EXTERNAL_PROXMOX_URL || process.env.PROXMOX_HOST || '',
+            jellyfin: process.env.EXTERNAL_JELLYFIN_URL || process.env.JELLYFIN_URL || '',
+            jellyseerr: process.env.EXTERNAL_JELLYSEERR_URL || process.env.JELLYSEERR_URL || '',
         }
     });
 });
@@ -38,11 +38,12 @@ app.get('/api/config', (req, res) => {
 // ===== Proxmox API Routes =====
 app.get('/api/proxmox/status', async (req, res) => {
     try {
-        const baseUrl = process.env.PROXMOX_URL;
+        const baseUrl = process.env.PROXMOX_HOST;
         const tokenId = process.env.PROXMOX_TOKEN_ID;
         const tokenSecret = process.env.PROXMOX_TOKEN_SECRET;
 
         if (!baseUrl || !tokenId || !tokenSecret) {
+            console.error('Proxmox config missing:', { baseUrl: !!baseUrl, tokenId: !!tokenId, tokenSecret: !!tokenSecret });
             return res.status(500).json({ error: 'Proxmox not configured' });
         }
 
