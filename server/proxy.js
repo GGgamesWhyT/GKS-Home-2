@@ -1,0 +1,348 @@
+/**
+ * GKS Home Dashboard - Backend Proxy Server
+ * Handles API requests to Proxmox, Jellyfin, Jellyseerr, and TVDB
+ * Keeps API keys server-side for security
+ */
+
+require('dotenv').config({ path: '../.env' });
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const fetch = require('node-fetch');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// HTTPS agent for self-signed certs (Proxmox)
+const https = require('https');
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Serve static files from parent directory
+app.use(express.static(path.join(__dirname, '..')));
+
+// ===== Configuration Endpoint =====
+app.get('/api/config', (req, res) => {
+    res.json({
+        externalLinks: {
+            proxmox: process.env.PROXMOX_URL || '',
+            jellyfin: process.env.JELLYFIN_URL || '',
+            jellyseerr: process.env.JELLYSEERR_URL || '',
+        }
+    });
+});
+
+// ===== Proxmox API Routes =====
+app.get('/api/proxmox/status', async (req, res) => {
+    try {
+        const baseUrl = process.env.PROXMOX_URL;
+        const tokenId = process.env.PROXMOX_TOKEN_ID;
+        const tokenSecret = process.env.PROXMOX_TOKEN_SECRET;
+
+        if (!baseUrl || !tokenId || !tokenSecret) {
+            return res.status(500).json({ error: 'Proxmox not configured' });
+        }
+
+        const authHeader = `PVEAPIToken=${tokenId}=${tokenSecret}`;
+
+        // Get cluster resources
+        const resourcesRes = await fetch(`${baseUrl}/api2/json/cluster/resources?type=node`, {
+            headers: { 'Authorization': authHeader },
+            agent: httpsAgent,
+        });
+
+        if (!resourcesRes.ok) {
+            throw new Error(`Proxmox API error: ${resourcesRes.status}`);
+        }
+
+        const resourcesData = await resourcesRes.json();
+        const nodes = resourcesData.data || [];
+
+        // Get VM counts per node
+        const vmsRes = await fetch(`${baseUrl}/api2/json/cluster/resources?type=vm`, {
+            headers: { 'Authorization': authHeader },
+            agent: httpsAgent,
+        });
+
+        const vmsData = await vmsRes.json();
+        const vms = vmsData.data || [];
+
+        // Count VMs per node
+        const vmCounts = {};
+        vms.forEach(vm => {
+            if (vm.status === 'running') {
+                vmCounts[vm.node] = (vmCounts[vm.node] || 0) + 1;
+            }
+        });
+
+        // Enrich nodes with VM counts
+        const enrichedNodes = nodes.map(node => ({
+            ...node,
+            vmCount: vmCounts[node.node] || 0,
+        }));
+
+        res.json({ nodes: enrichedNodes });
+    } catch (error) {
+        console.error('Proxmox error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ===== Jellyfin API Routes =====
+app.get('/api/jellyfin/latest', async (req, res) => {
+    try {
+        const baseUrl = process.env.JELLYFIN_URL;
+        const apiKey = process.env.JELLYFIN_API_KEY;
+        const userId = process.env.JELLYFIN_USER_ID;
+
+        if (!baseUrl || !apiKey || !userId) {
+            return res.status(500).json({ error: 'Jellyfin not configured' });
+        }
+
+        // Get latest items
+        const response = await fetch(
+            `${baseUrl}/Users/${userId}/Items/Latest?Limit=20&IncludeItemTypes=Movie,Series,Episode&EnableImages=true&ImageTypeLimit=1`,
+            {
+                headers: {
+                    'X-Emby-Token': apiKey,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Jellyfin API error: ${response.status}`);
+        }
+
+        const items = await response.json();
+
+        // Transform items with image URLs
+        const transformedItems = items.map(item => ({
+            Id: item.Id,
+            Name: item.Name,
+            Type: item.Type,
+            ProductionYear: item.ProductionYear,
+            ImageUrl: item.ImageTags?.Primary
+                ? `${baseUrl}/Items/${item.Id}/Images/Primary?maxHeight=300&quality=90`
+                : null,
+        }));
+
+        res.json({ items: transformedItems });
+    } catch (error) {
+        console.error('Jellyfin error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ===== Jellyseerr API Routes =====
+app.get('/api/jellyseerr/requests', async (req, res) => {
+    try {
+        const baseUrl = process.env.JELLYSEERR_URL;
+        const apiKey = process.env.JELLYSEERR_API_KEY;
+
+        if (!baseUrl || !apiKey) {
+            return res.status(500).json({ error: 'Jellyseerr not configured' });
+        }
+
+        const response = await fetch(
+            `${baseUrl}/api/v1/request?take=10&sort=added&sortDirection=desc`,
+            {
+                headers: {
+                    'X-Api-Key': apiKey,
+                },
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Jellyseerr API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        res.json({
+            requests: data.results || [],
+            totalCount: data.pageInfo?.results || 0,
+        });
+    } catch (error) {
+        console.error('Jellyseerr error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ===== TVDB API Routes =====
+let tvdbToken = null;
+let tvdbTokenExpiry = null;
+
+async function getTVDBToken() {
+    // Check if we have a valid token
+    if (tvdbToken && tvdbTokenExpiry && Date.now() < tvdbTokenExpiry) {
+        return tvdbToken;
+    }
+
+    const apiKey = process.env.TVDB_API_KEY;
+    const pin = process.env.TVDB_PIN;
+
+    if (!apiKey) {
+        throw new Error('TVDB not configured');
+    }
+
+    const response = await fetch('https://api4.thetvdb.com/v4/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            apikey: apiKey,
+            pin: pin || undefined,
+        }),
+    });
+
+    if (!response.ok) {
+        throw new Error(`TVDB login failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    tvdbToken = data.data?.token;
+    // Token is valid for 1 month, but refresh after 3 weeks
+    tvdbTokenExpiry = Date.now() + (21 * 24 * 60 * 60 * 1000);
+
+    return tvdbToken;
+}
+
+app.get('/api/tvdb/series/:id', async (req, res) => {
+    try {
+        const token = await getTVDBToken();
+        const { id } = req.params;
+
+        const response = await fetch(`https://api4.thetvdb.com/v4/series/${id}/extended`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`TVDB API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        res.json(data.data);
+    } catch (error) {
+        console.error('TVDB error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/tvdb/series/:id/episodes', async (req, res) => {
+    try {
+        const token = await getTVDBToken();
+        const { id } = req.params;
+        const { season, episode } = req.query;
+
+        let url = `https://api4.thetvdb.com/v4/series/${id}/episodes/default`;
+        if (season) url += `?season=${season}`;
+
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`TVDB API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Filter by episode if specified
+        let episodes = data.data?.episodes || [];
+        if (episode) {
+            episodes = episodes.filter(ep => ep.number === parseInt(episode));
+        }
+
+        res.json({ episodes });
+    } catch (error) {
+        console.error('TVDB error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/tvdb/search', async (req, res) => {
+    try {
+        const token = await getTVDBToken();
+        const { query } = req.query;
+
+        const response = await fetch(`https://api4.thetvdb.com/v4/search?query=${encodeURIComponent(query)}&type=series`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`TVDB API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        res.json({ results: data.data || [] });
+    } catch (error) {
+        console.error('TVDB error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/tvdb/series/:id/artworks', async (req, res) => {
+    try {
+        const token = await getTVDBToken();
+        const { id } = req.params;
+        const { type } = req.query;
+
+        const response = await fetch(`https://api4.thetvdb.com/v4/series/${id}/artworks`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`TVDB API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        let artworks = data.data?.artworks || [];
+
+        // Filter by type if specified
+        if (type) {
+            const typeMap = {
+                'poster': 2,
+                'banner': 1,
+                'fanart': 3,
+                'background': 3,
+            };
+            const typeId = typeMap[type.toLowerCase()];
+            if (typeId) {
+                artworks = artworks.filter(art => art.type === typeId);
+            }
+        }
+
+        res.json({ artworks });
+    } catch (error) {
+        console.error('TVDB error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ===== Catch-all for SPA =====
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+});
+
+// Start server
+app.listen(PORT, () => {
+    console.log(`
+╔═══════════════════════════════════════════╗
+║       GKS Home Dashboard Server           ║
+╠═══════════════════════════════════════════╣
+║  Server running at http://localhost:${PORT}  ║
+╚═══════════════════════════════════════════╝
+    `);
+});
