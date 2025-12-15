@@ -51,6 +51,9 @@
 
     /* Font */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    /* Header height for sticky positioning */
+    --header-height: 70px;
 }
 
 /* Light Theme */
@@ -305,8 +308,7 @@ body::before {
 /* Sticky mode - transforms into sleek header bar below main header */
 .greeting-widget.sticky {
     position: fixed;
-    top: 70px;
-    /* Below the main header */
+    top: var(--header-height);
     left: 0;
     right: 0;
     z-index: 998;
@@ -726,8 +728,6 @@ body::before {
         flex-direction: row;
         text-align: left;
         padding: var(--spacing-xs) var(--spacing-md);
-        top: 50px;
-        /* Smaller header on mobile */
         gap: var(--spacing-sm);
     }
 
@@ -2346,6 +2346,7 @@ body.edit-mode .widget.dragging {
         --spacing-md: 12px;
         --spacing-lg: 16px;
         --spacing-xl: 20px;
+        --header-height: 56px;
     }
 
     .header {
@@ -2445,6 +2446,10 @@ body.edit-mode .widget.dragging {
 
 /* Mobile phones */
 @media (max-width: 480px) {
+    :root {
+        --header-height: 48px;
+    }
+
     .header {
         padding: var(--spacing-xs) var(--spacing-sm);
     }
@@ -2602,6 +2607,10 @@ body.edit-mode .widget.dragging {
 
 /* Very small phones */
 @media (max-width: 360px) {
+    :root {
+        --header-height: 40px;
+    }
+
     .logo {
         height: 24px;
     }
@@ -2622,7 +2631,6 @@ body.edit-mode .widget.dragging {
 
     /* Adjust sticky greeting for very small screens */
     .greeting-widget.sticky {
-        top: 42px;
         padding: var(--spacing-xs) var(--spacing-sm);
     }
 
