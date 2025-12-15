@@ -1031,7 +1031,9 @@ body::before {
 body.edit-mode .widget {
     cursor: grab;
     border-style: dashed;
+    border-color: var(--accent-primary);
     animation: editPulse 2s ease-in-out infinite;
+    opacity: 1 !important;
 }
 
 body.edit-mode .widget:hover {
@@ -1040,12 +1042,12 @@ body.edit-mode .widget:hover {
 
 body.edit-mode .widget.dragging {
     cursor: grabbing;
-    opacity: 0.7;
+    opacity: 0.7 !important;
     transform: scale(1.02);
 }
 
 body.edit-mode .widget.resizing {
-    opacity: 0.9;
+    opacity: 0.9 !important;
 }
 
 @keyframes editPulse {
