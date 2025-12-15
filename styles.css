@@ -483,6 +483,32 @@ body::before {
 }
 
 /* ===== Media Grid (Jellyfin) ===== */
+.media-scroll-container {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-md);
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: var(--spacing-sm);
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+    min-height: 220px;
+}
+
+.media-scroll-container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.media-scroll-container::-webkit-scrollbar-track {
+    background: var(--bg-tertiary);
+    border-radius: 3px;
+}
+
+.media-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 3px;
+}
+
 .media-grid {
     display: flex;
     gap: var(--spacing-md);
@@ -490,20 +516,6 @@ body::before {
     padding-bottom: var(--spacing-sm);
     scrollbar-width: thin;
     scrollbar-color: var(--accent-primary) var(--bg-tertiary);
-}
-
-.media-grid::-webkit-scrollbar {
-    height: 6px;
-}
-
-.media-grid::-webkit-scrollbar-track {
-    background: var(--bg-tertiary);
-    border-radius: 3px;
-}
-
-.media-grid::-webkit-scrollbar-thumb {
-    background: var(--accent-primary);
-    border-radius: 3px;
 }
 
 .media-card {

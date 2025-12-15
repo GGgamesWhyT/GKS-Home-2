@@ -39,7 +39,8 @@ class JellyfinWidget {
             return;
         }
 
-        const html = items.slice(0, CONFIG.widgets.jellyfin.maxItems).map(item => this.renderMediaCard(item)).join('');
+        // Wrap in a container that enables horizontal scrolling
+        const html = `<div class="media-scroll-container">${items.slice(0, CONFIG.widgets.jellyfin.maxItems).map(item => this.renderMediaCard(item)).join('')}</div>`;
         this.container.innerHTML = html;
     }
 

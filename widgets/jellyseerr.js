@@ -49,26 +49,40 @@ class JellyseerrWidget {
     }
 
     renderRequestItem(request) {
+        // Jellyseerr stores media info differently - check both request and media object
         const media = request.media || {};
-        const title = media.title || media.name || 'Unknown';
-        const posterUrl = media.posterPath
-            ? `https://image.tmdb.org/t/p/w92${media.posterPath}`
-            : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 60"%3E%3Crect fill="%231a1a1d" width="40" height="60"/%3E%3C/svg%3E';
+
+        // Title can be in different places depending on media type
+        let title = 'Unknown';
+        if (media.title) {
+            title = media.title;
+        } else if (media.name) {
+            title = media.name;
+        } else if (request.type === 'movie' && media.externalTitle) {
+            title = media.externalTitle;
+        }
+
+        // Poster path - Jellyseerr may store it differently
+        let posterUrl = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 60"%3E%3Crect fill="%231a1a1d" width="40" height="60"/%3E%3C/svg%3E';
+        if (media.posterPath) {
+            posterUrl = `https://image.tmdb.org/t/p/w92${media.posterPath}`;
+        }
 
         const status = this.getStatusLabel(request.status);
         const statusClass = this.getStatusClass(request.status);
-        const requestedBy = request.requestedBy?.displayName || request.requestedBy?.email || 'Unknown';
+        const requestedBy = request.requestedBy?.displayName || request.requestedBy?.email || request.requestedBy?.username || 'Unknown';
 
         // Build link to Jellyseerr request
-        const mediaType = media.mediaType === 'movie' ? 'movie' : 'tv';
-        const jellyseerrUrl = CONFIG.externalLinks.jellyseerr && media.tmdbId
-            ? `${CONFIG.externalLinks.jellyseerr}/${mediaType}/${media.tmdbId}`
+        const mediaType = request.type === 'movie' ? 'movie' : 'tv';
+        const tmdbId = media.tmdbId || request.media?.tmdbId;
+        const jellyseerrUrl = CONFIG.externalLinks.jellyseerr && tmdbId
+            ? `${CONFIG.externalLinks.jellyseerr}/${mediaType}/${tmdbId}`
             : '#';
 
         return `
             <a href="${jellyseerrUrl}" target="_blank" class="request-item">
                 <div class="request-poster">
-                    <img src="${posterUrl}" alt="${title}" loading="lazy">
+                    <img src="${posterUrl}" alt="${title}" loading="lazy" onerror="this.style.display='none'">
                 </div>
                 <div class="request-info">
                     <div class="request-title">${title}</div>

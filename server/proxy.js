@@ -46,7 +46,9 @@ app.get('/api/proxmox/status', async (req, res) => {
             return res.status(500).json({ error: 'Proxmox not configured' });
         }
 
+        // Format: PVEAPIToken=user@realm!tokenid=secret
         const authHeader = `PVEAPIToken=${tokenId}=${tokenSecret}`;
+        console.log(`Proxmox auth header format: PVEAPIToken=${tokenId}=***`);
 
         // Get cluster resources
         const resourcesRes = await fetch(`${baseUrl}/api2/json/cluster/resources?type=node`, {
@@ -55,6 +57,8 @@ app.get('/api/proxmox/status', async (req, res) => {
         });
 
         if (!resourcesRes.ok) {
+            const errorText = await resourcesRes.text();
+            console.error('Proxmox error response:', errorText);
             throw new Error(`Proxmox API error: ${resourcesRes.status}`);
         }
 
@@ -102,17 +106,27 @@ app.get('/api/jellyfin/latest', async (req, res) => {
             return res.status(500).json({ error: 'Jellyfin not configured' });
         }
 
-        // Get latest items
+        console.log(`Fetching Jellyfin latest for user: ${userId}`);
+
+        // Use httpsAgent if URL is HTTPS
+        const fetchOptions = {
+            headers: {
+                'X-Emby-Token': apiKey,
+            },
+        };
+        if (baseUrl.startsWith('https')) {
+            fetchOptions.agent = httpsAgent;
+        }
+
+        // Get latest items - Only Movies and Series (not episodes) for cleaner display
         const response = await fetch(
-            `${baseUrl}/Users/${userId}/Items/Latest?Limit=20&IncludeItemTypes=Movie,Series,Episode&EnableImages=true&ImageTypeLimit=1`,
-            {
-                headers: {
-                    'X-Emby-Token': apiKey,
-                },
-            }
+            `${baseUrl}/Users/${userId}/Items/Latest?Limit=20&IncludeItemTypes=Movie,Series&EnableImages=true&ImageTypeLimit=1`,
+            fetchOptions
         );
 
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Jellyfin error response:', errorText);
             throw new Error(`Jellyfin API error: ${response.status}`);
         }
 
@@ -146,23 +160,66 @@ app.get('/api/jellyseerr/requests', async (req, res) => {
             return res.status(500).json({ error: 'Jellyseerr not configured' });
         }
 
+        // Use httpsAgent if URL is HTTPS
+        const fetchOptions = {
+            headers: {
+                'X-Api-Key': apiKey,
+            },
+        };
+        if (baseUrl.startsWith('https')) {
+            fetchOptions.agent = httpsAgent;
+        }
+
         const response = await fetch(
             `${baseUrl}/api/v1/request?take=10&sort=added&sortDirection=desc`,
-            {
-                headers: {
-                    'X-Api-Key': apiKey,
-                },
-            }
+            fetchOptions
         );
 
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Jellyseerr error response:', errorText);
             throw new Error(`Jellyseerr API error: ${response.status}`);
         }
 
         const data = await response.json();
 
+        // Debug: log the first request to see the structure
+        if (data.results && data.results.length > 0) {
+            console.log('Jellyseerr first request sample:', JSON.stringify(data.results[0], null, 2));
+        }
+
+        // Transform requests - fetch additional media info if needed
+        const requests = await Promise.all((data.results || []).map(async (request) => {
+            let media = request.media || {};
+
+            // If media info is missing, try to fetch it
+            if (!media.title && !media.name && media.tmdbId) {
+                try {
+                    const mediaType = request.type === 'movie' ? 'movie' : 'tv';
+                    const mediaResponse = await fetch(
+                        `${baseUrl}/api/v1/${mediaType}/${media.tmdbId}`,
+                        fetchOptions
+                    );
+                    if (mediaResponse.ok) {
+                        const mediaData = await mediaResponse.json();
+                        media = { ...media, ...mediaData };
+                    }
+                } catch (e) {
+                    console.warn('Failed to fetch additional media info');
+                }
+            }
+
+            return {
+                ...request,
+                media: {
+                    ...media,
+                    posterPath: media.posterPath || null,
+                },
+            };
+        }));
+
         res.json({
-            requests: data.results || [],
+            requests,
             totalCount: data.pageInfo?.results || 0,
         });
     } catch (error) {
