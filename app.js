@@ -19,6 +19,7 @@ class Dashboard {
         this.restoreWidgetLayout();
         this.setExternalLinks();
         this.setGreeting();
+        this.initMascot();
         await this.initWidgets();
         this.startRefreshTimers();
         window.dashboard = this;
@@ -65,6 +66,146 @@ class Dashboard {
             const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const date = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
             timeEl.textContent = `${date} • ${time}`;
+        }
+    }
+
+    // ===== Mascot System =====
+    initMascot() {
+        this.mascot = document.getElementById('mascot');
+        this.pupilLeft = document.getElementById('pupil-left');
+        this.pupilRight = document.getElementById('pupil-right');
+        this.mascotHome = document.getElementById('greeting-widget');
+        this.greetingWidget = document.getElementById('greeting-widget');
+
+        if (!this.mascot || !this.pupilLeft || !this.pupilRight) return;
+
+        this.mascotState = {
+            isFloating: false,
+            isSticky: false,
+            currentWidget: null,
+            problemWidget: null,
+        };
+
+        // Eye tracking
+        document.addEventListener('mousemove', (e) => this.updateMascotEyes(e));
+
+        // Scroll behavior - greeting widget becomes sticky header
+        window.addEventListener('scroll', () => this.handleScroll());
+
+        // Click reactions
+        this.mascot.addEventListener('click', () => this.mascotReact('happy'));
+        this.mascot.addEventListener('dblclick', () => this.mascotReact('bounce'));
+
+        // Initial check for problems
+        setTimeout(() => this.checkForProblems(), 2000);
+
+        // Periodic problem check
+        setInterval(() => this.checkForProblems(), 10000);
+    }
+
+    handleScroll() {
+        if (!this.greetingWidget) return;
+
+        const scrollY = window.scrollY;
+        const threshold = 100; // Start sticky after 100px scroll
+
+        if (scrollY > threshold && !this.mascotState.isSticky) {
+            this.mascotState.isSticky = true;
+
+            // Create placeholder to prevent content jump
+            if (!this.greetingPlaceholder) {
+                this.greetingPlaceholder = document.createElement('div');
+                this.greetingPlaceholder.className = 'greeting-placeholder';
+                this.greetingPlaceholder.style.height = this.greetingWidget.offsetHeight + 'px';
+                this.greetingWidget.parentNode.insertBefore(this.greetingPlaceholder, this.greetingWidget.nextSibling);
+            }
+
+            this.greetingWidget.classList.add('sticky');
+            document.body.classList.add('has-sticky-header');
+        } else if (scrollY <= threshold && this.mascotState.isSticky) {
+            this.mascotState.isSticky = false;
+            this.greetingWidget.classList.remove('sticky');
+            document.body.classList.remove('has-sticky-header');
+
+            // Remove placeholder
+            if (this.greetingPlaceholder) {
+                this.greetingPlaceholder.remove();
+                this.greetingPlaceholder = null;
+            }
+        }
+    }
+
+    updateMascotEyes(e) {
+        if (!this.mascot) return;
+        const mascotRect = this.mascot.getBoundingClientRect();
+        const mascotCenterX = mascotRect.left + mascotRect.width / 2;
+        const mascotCenterY = mascotRect.top + mascotRect.height / 2;
+
+        const deltaX = e.clientX - mascotCenterX;
+        const deltaY = e.clientY - mascotCenterY;
+
+        const maxMove = 3;
+        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+        const normalizedX = distance > 0 ? (deltaX / distance) * Math.min(distance / 50, 1) * maxMove : 0;
+        const normalizedY = distance > 0 ? (deltaY / distance) * Math.min(distance / 50, 1) * maxMove : 0;
+
+        this.pupilLeft.style.transform = `translate(${normalizedX}px, ${normalizedY}px)`;
+        this.pupilRight.style.transform = `translate(${normalizedX}px, ${normalizedY}px)`;
+    }
+
+    mascotReact(type) {
+        if (!this.mascot) return;
+
+        if (type === 'happy') {
+            this.mascot.classList.add('happy');
+            setTimeout(() => this.mascot.classList.remove('happy'), 2000);
+        } else if (type === 'bounce') {
+            // If sad, double-clicking cheers him up temporarily!
+            if (this.mascot.classList.contains('sad')) {
+                this.mascot.classList.remove('sad');
+                this.mascot.classList.add('happy');
+                this.mascot.style.animation = 'mascotBounce 0.5s ease';
+                setTimeout(() => {
+                    this.mascot.style.animation = '';
+                    this.mascot.classList.remove('happy');
+                    // Check if still has problems, go back to sad
+                    if (this.mascotState.hasProblem) {
+                        setTimeout(() => this.mascot.classList.add('sad'), 500);
+                    }
+                }, 2000);
+            } else {
+                this.mascot.style.animation = 'mascotBounce 0.5s ease';
+                setTimeout(() => this.mascot.style.animation = '', 500);
+            }
+        }
+    }
+
+    checkForProblems() {
+        if (!this.mascot) return;
+
+        // Check for offline servers in Pyrodactyl
+        const offlineServer = document.querySelector('.server-card.offline, .server-card.starting');
+
+        // Check for stopped containers by looking at the stats counter
+        const stoppedCountEl = document.querySelector('.container-stat.stopped .stat-number');
+        const stoppedCount = stoppedCountEl ? parseInt(stoppedCountEl.textContent, 10) : 0;
+        const hasStoppedContainers = stoppedCount > 0;
+
+        // Check for error states in any widget
+        const errorWidget = document.querySelector('.widget .error-state');
+
+        const hasProblem = offlineServer || hasStoppedContainers || errorWidget;
+
+        if (hasProblem && !this.mascotState.hasProblem) {
+            // New problem detected - make mascot sad (stays in header)
+            this.mascotState.hasProblem = true;
+            this.mascot.classList.add('sad');
+        } else if (!hasProblem && this.mascotState.hasProblem) {
+            // Problems resolved!
+            this.mascotState.hasProblem = false;
+            this.mascot.classList.remove('sad');
+            this.mascot.classList.add('happy');
+            setTimeout(() => this.mascot.classList.remove('happy'), 2000);
         }
     }
 
@@ -385,43 +526,52 @@ class Dashboard {
         const saved = localStorage.getItem(CONFIG.storage.widgetLayout);
         const grid = document.querySelector('.dashboard-grid');
 
-        if (saved) {
-            try {
-                const layout = JSON.parse(saved);
-
-                // Restore order
-                if (layout.order) {
-                    layout.order.forEach(name => {
-                        const widget = document.querySelector(`[data-widget="${name}"]`);
-                        if (widget) grid.appendChild(widget);
-                    });
-                }
-
-                // Restore sizes
-                if (layout.sizes) {
-                    Object.entries(layout.sizes).forEach(([name, size]) => {
-                        const widget = document.querySelector(`[data-widget="${name}"]`);
-                        if (widget) {
-                            widget.style.gridColumn = `span ${size.colSpan}`;
-                            widget.style.gridRow = `span ${size.rowSpan}`;
-                            widget.dataset.colSpan = size.colSpan;
-                            widget.dataset.rowSpan = size.rowSpan;
-                        }
-                    });
-                }
-                return;
-            } catch (e) {
-                console.warn('Could not restore layout');
+        // Default layout - used when no saved layout exists
+        const defaultLayout = {
+            order: [null, "pyrodactyl", "proxmox", "portainer", "jellyseerr", "jellyfin"],
+            sizes: {
+                "pyrodactyl": { "colSpan": "1", "rowSpan": "1" },
+                "proxmox": { "colSpan": "3", "rowSpan": "1" },
+                "portainer": { "colSpan": "2", "rowSpan": "1" },
+                "jellyseerr": { "colSpan": "2", "rowSpan": "1" },
+                "jellyfin": { "colSpan": "4", "rowSpan": "1" }
             }
-        }
+        };
 
-        // Set defaults
-        document.querySelectorAll('.widget').forEach(widget => {
-            widget.style.gridColumn = 'span 2';
-            widget.style.gridRow = 'span 2';
-            widget.dataset.colSpan = '2';
-            widget.dataset.rowSpan = '2';
-        });
+        const layout = saved ? JSON.parse(saved) : defaultLayout;
+
+        try {
+            // Restore order
+            if (layout.order) {
+                layout.order.forEach(name => {
+                    if (!name) return; // Skip null entries
+                    const widget = document.querySelector(`[data-widget="${name}"]`);
+                    if (widget) grid.appendChild(widget);
+                });
+            }
+
+            // Restore sizes
+            if (layout.sizes) {
+                Object.entries(layout.sizes).forEach(([name, size]) => {
+                    const widget = document.querySelector(`[data-widget="${name}"]`);
+                    if (widget) {
+                        widget.style.gridColumn = `span ${size.colSpan}`;
+                        widget.style.gridRow = `span ${size.rowSpan}`;
+                        widget.dataset.colSpan = size.colSpan;
+                        widget.dataset.rowSpan = size.rowSpan;
+                    }
+                });
+            }
+        } catch (e) {
+            console.warn('Could not restore layout, using basic defaults');
+            // Set basic defaults
+            document.querySelectorAll('.widget').forEach(widget => {
+                widget.style.gridColumn = 'span 2';
+                widget.style.gridRow = 'span 2';
+                widget.dataset.colSpan = '2';
+                widget.dataset.rowSpan = '2';
+            });
+        }
     }
 
     // ===== Settings =====

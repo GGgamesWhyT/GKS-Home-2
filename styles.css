@@ -289,17 +289,98 @@ body::before {
     backdrop-filter: blur(10px);
     padding: var(--spacing-lg) var(--spacing-xl);
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
+    gap: var(--spacing-lg);
     animation: widgetFadeIn 0.6s ease forwards;
     opacity: 0;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .greeting-widget:hover {
-    transform: translateY(-3px);
     border-color: var(--accent-primary);
     box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
+}
+
+/* Sticky mode - transforms into sleek header bar below main header */
+.greeting-widget.sticky {
+    position: fixed;
+    top: 70px;
+    /* Below the main header */
+    left: 0;
+    right: 0;
+    z-index: 998;
+    grid-column: auto;
+    border-radius: 0;
+    padding: var(--spacing-sm) var(--spacing-xl);
+    margin: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    transform: none !important;
+    animation: slideDownSticky 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.greeting-widget.sticky:hover {
+    transform: none !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideDownSticky {
+    0% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Compact sticky styling with smooth transitions */
+.greeting-widget.sticky .mascot {
+    transform: scale(0.7);
+    transition: transform 0.3s ease;
+}
+
+.greeting-widget.sticky .mascot-antenna {
+    height: 8px;
+    transition: height 0.3s ease;
+}
+
+.greeting-widget.sticky .mascot-head {
+    width: 35px;
+    height: 28px;
+    transition: all 0.3s ease;
+}
+
+.greeting-widget.sticky .mascot-eye {
+    width: 10px;
+    height: 10px;
+    transition: all 0.3s ease;
+}
+
+.greeting-widget.sticky .greeting-text {
+    font-size: 1.1rem;
+    transition: font-size 0.3s ease;
+}
+
+.greeting-widget.sticky .current-time {
+    font-size: 0.9rem;
+    transition: font-size 0.3s ease;
+}
+
+/* Placeholder to prevent content jump when greeting becomes sticky */
+.greeting-placeholder {
+    grid-column: 1 / -1;
+    visibility: hidden;
+}
+
+.greeting-content {
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .greeting-text {
@@ -318,6 +399,320 @@ body::before {
     font-variant-numeric: tabular-nums;
 }
 
+/* ===== Mascot Character ===== */
+.mascot {
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.mascot:hover {
+    transform: scale(1.1);
+}
+
+.mascot:hover .mascot-mouth {
+    height: 8px;
+    border-radius: 0 0 10px 10px;
+}
+
+.mascot-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mascot-antenna {
+    width: 3px;
+    height: 12px;
+    background: linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+    border-radius: 3px;
+    position: relative;
+    animation: antennaBob 2s ease-in-out infinite;
+    transform-origin: bottom center;
+}
+
+@keyframes antennaBob {
+
+    0%,
+    100% {
+        transform: rotate(-5deg);
+    }
+
+    50% {
+        transform: rotate(5deg);
+    }
+}
+
+.antenna-ball {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 15px var(--accent-primary), 0 0 30px var(--accent-primary);
+    animation: antennaPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes antennaPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px var(--accent-primary), 0 0 20px var(--accent-primary);
+        transform: translateX(-50%) scale(1);
+    }
+
+    50% {
+        box-shadow: 0 0 20px var(--accent-primary), 0 0 40px var(--accent-primary);
+        transform: translateX(-50%) scale(1.2);
+    }
+}
+
+.mascot-head {
+    width: 50px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-card) 100%);
+    border: 2px solid var(--accent-primary);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 212, 170, 0.2), inset 0 2px 10px rgba(255, 255, 255, 0.05);
+}
+
+.mascot-eye {
+    width: 14px;
+    height: 14px;
+    background: var(--bg-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.mascot-pupil {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-primary);
+    border-radius: 50%;
+    transition: transform 0.1s ease-out;
+    box-shadow: 0 0 8px var(--accent-primary);
+    position: relative;
+}
+
+.mascot-pupil::after {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 2px;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+.mascot-mouth {
+    position: absolute;
+    bottom: 6px;
+    width: 12px;
+    height: 4px;
+    background: var(--accent-primary);
+    border-radius: 0 0 6px 6px;
+    transition: all 0.3s ease;
+}
+
+/* Mascot expressions */
+.mascot.happy .mascot-mouth {
+    height: 10px;
+    border-radius: 0 0 12px 12px;
+}
+
+.mascot.blink .mascot-eye {
+    height: 3px;
+}
+
+/* Idle animation - occasional blink */
+.mascot-eye {
+    animation: mascotBlink 4s ease-in-out infinite;
+}
+
+@keyframes mascotBlink {
+
+    0%,
+    45%,
+    55%,
+    100% {
+        height: 14px;
+    }
+
+    48%,
+    52% {
+        height: 3px;
+    }
+}
+
+@keyframes mascotBounce {
+
+    0%,
+    100% {
+        transform: scale(1) translateY(0);
+    }
+
+    25% {
+        transform: scale(1.1) translateY(-10px);
+    }
+
+    50% {
+        transform: scale(0.95) translateY(0);
+    }
+
+    75% {
+        transform: scale(1.05) translateY(-5px);
+    }
+}
+
+/* Mascot floating state - follows scroll */
+.mascot.floating {
+    position: fixed;
+    top: 50%;
+    left: 20px;
+    z-index: 1000;
+    animation: mascotDropIn 0.6s ease-out forwards, mascotFloat 3s ease-in-out 0.6s infinite;
+}
+
+@keyframes mascotDropIn {
+    0% {
+        top: 10px;
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateY(0) scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        top: 50%;
+        transform: translateY(-50%) scale(1);
+    }
+}
+
+@keyframes mascotFloat {
+
+    0%,
+    100% {
+        transform: translateY(-50%);
+    }
+
+    50% {
+        transform: translateY(calc(-50% - 5px));
+    }
+}
+
+/* Mascot jumping to widget */
+.mascot.jumping {
+    animation: mascotJump 0.3s ease-out forwards;
+}
+
+@keyframes mascotJump {
+    0% {
+        transform: scale(1) translateY(0);
+    }
+
+    30% {
+        transform: scale(1.2) translateY(-30px);
+    }
+
+    60% {
+        transform: scale(0.9) translateY(10px);
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Mascot on a widget */
+.mascot.on-widget {
+    position: absolute;
+    transition: top 0.3s ease, left 0.3s ease;
+}
+
+/* Mascot sad expression */
+.mascot.sad .mascot-antenna {
+    animation: antennaDroop 2s ease-in-out infinite;
+}
+
+@keyframes antennaDroop {
+
+    0%,
+    100% {
+        transform: rotate(-15deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+}
+
+.mascot.sad .antenna-ball {
+    background: var(--status-offline);
+    box-shadow: 0 0 10px var(--status-offline);
+    animation: sadPulse 2s ease-in-out infinite;
+}
+
+@keyframes sadPulse {
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.mascot.sad .mascot-mouth {
+    width: 10px;
+    height: 6px;
+    border-radius: 6px 6px 0 0;
+    background: var(--status-offline);
+    bottom: 8px;
+}
+
+.mascot.sad .mascot-eye {
+    animation: none;
+}
+
+.mascot.sad .mascot-pupil {
+    background: var(--text-muted);
+    box-shadow: none;
+    transform: translateY(2px) !important;
+}
+
+/* Worried expression when starting */
+.mascot.worried .mascot-mouth {
+    width: 8px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--status-warning);
+}
+
+.mascot.worried .antenna-ball {
+    background: var(--status-warning);
+    box-shadow: 0 0 10px var(--status-warning);
+}
+
 @media (max-width: 600px) {
     .greeting-widget {
         flex-direction: column;
@@ -326,12 +721,32 @@ body::before {
         padding: var(--spacing-md);
     }
 
+    .greeting-content {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
     .greeting-text {
         font-size: 1.2rem;
     }
 
     .current-time {
         font-size: 1rem;
+    }
+
+    .mascot-head {
+        width: 40px;
+        height: 32px;
+    }
+
+    .mascot-eye {
+        width: 10px;
+        height: 10px;
+    }
+
+    .mascot-pupil {
+        width: 6px;
+        height: 6px;
     }
 }
 
