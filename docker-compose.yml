@@ -8,25 +8,23 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-    env_file:
-      - .env
+      - PROXMOX_HOST=${PROXMOX_HOST}
+      - PROXMOX_TOKEN_ID=${PROXMOX_TOKEN_ID}
+      - PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
+      - JELLYFIN_URL=${JELLYFIN_URL}
+      - JELLYFIN_API_KEY=${JELLYFIN_API_KEY}
+      - JELLYFIN_USER_ID=${JELLYFIN_USER_ID}
+      - JELLYSEERR_URL=${JELLYSEERR_URL}
+      - JELLYSEERR_API_KEY=${JELLYSEERR_API_KEY}
+      - EXTERNAL_PROXMOX_URL=${EXTERNAL_PROXMOX_URL}
+      - EXTERNAL_JELLYFIN_URL=${EXTERNAL_JELLYFIN_URL}
+      - EXTERNAL_JELLYSEERR_URL=${EXTERNAL_JELLYSEERR_URL}
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/" ]
       interval: 30s
       timeout: 3s
       retries: 3
       start_period: 10s
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
-
-# Optional: Add Watchtower for automatic updates
-#  watchtower:
-#    image: containrrr/watchtower
-#    container_name: watchtower
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    environment:
-#      - WATCHTOWER_CLEANUP=true
-#      - WATCHTOWER_POLL_INTERVAL=86400
-#    restart: unless-stopped
