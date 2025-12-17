@@ -3196,3 +3196,47 @@ body.edit-mode .widget.dragging {
 .guide-hero {
     animation: heroFadeUp 0.6s ease-out forwards;
 }
+
+/* ===== Performance Optimizations ===== */
+
+/* GPU compositing hints for smooth animations */
+.gauge-ring,
+.mascot,
+.server-showcase-card,
+.widget,
+.media-card {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Remove will-change after animations complete to free up GPU memory */
+.loaded .gauge-ring,
+.loaded .server-showcase-card {
+    will-change: auto;
+}
+
+/* Reduce animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .mascot,
+    .mascot * {
+        animation: none !important;
+    }
+
+    .gauge-ring {
+        animation: none !important;
+    }
+
+    body::before {
+        animation: none !important;
+    }
+}

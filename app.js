@@ -86,8 +86,14 @@ class Dashboard {
             problemWidget: null,
         };
 
-        // Eye tracking
-        document.addEventListener('mousemove', (e) => this.updateMascotEyes(e));
+        // Eye tracking with throttling to reduce CPU usage
+        let lastMoveTime = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastMoveTime < 16) return; // ~60fps limit
+            lastMoveTime = now;
+            this.updateMascotEyes(e);
+        });
 
         // Scroll behavior - greeting widget becomes sticky header
         window.addEventListener('scroll', () => this.handleScroll());

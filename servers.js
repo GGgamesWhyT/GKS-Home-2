@@ -71,8 +71,14 @@ class ServersPage {
 
         if (!this.mascot || !this.pupilLeft || !this.pupilRight) return;
 
-        // Eye tracking
-        document.addEventListener('mousemove', (e) => this.updateMascotEyes(e));
+        // Eye tracking with throttling for performance
+        let lastMoveTime = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastMoveTime < 16) return; // ~60fps limit
+            lastMoveTime = now;
+            this.updateMascotEyes(e);
+        });
 
         // Click reactions
         this.mascot.addEventListener('click', () => this.mascotReact('happy'));
