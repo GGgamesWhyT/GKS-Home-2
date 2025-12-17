@@ -16,6 +16,7 @@ class MascotBuddy {
         this.isDragging = false;
         this.dragOffset = { x: 0, y: 0 };
         this.offlineServers = [];
+        this.stoppedContainers = 0;  // Track stopped containers
         this.patrolIndex = 0;
         this.patrolDirection = 1;
 
@@ -36,7 +37,7 @@ class MascotBuddy {
         this.moveSpeed = 0.08;
         this.particleInterval = 150;
         this.idleAnimationInterval = 15000; // 15-30 seconds
-        this.patrolSpeed = 3000; // Time to move between servers
+        this.patrolSpeed = 10000; // Time to stay at each target (10 seconds)
 
         // Bind methods
         this.update = this.update.bind(this);
@@ -178,8 +179,8 @@ class MascotBuddy {
     updateTargetPosition() {
         if (this.isBeingDragged) return;
 
-        // If there are offline servers, patrol between them
-        if (this.offlineServers.length > 0) {
+        // If there are any offline items (servers OR containers), patrol between them
+        if (this.offlineServers.length > 0 || this.stoppedContainers > 0) {
             this.updatePatrolTarget();
             return;
         }
@@ -194,41 +195,108 @@ class MascotBuddy {
     }
 
     updatePatrolTarget() {
-        if (this.offlineServers.length === 0) return;
+        // Build list of all patrol targets
+        const targets = [];
 
-        // Get current target server element - check all possible selectors
-        let serverCards = document.querySelectorAll('.server-showcase-card.offline, .server-card.offline, .pyrodactyl-server.offline');
+        // Add offline server cards
+        const serverCards = document.querySelectorAll('.server-showcase-card.offline, .server-card.offline, .pyrodactyl-server.offline');
+        serverCards.forEach(card => targets.push(card));
 
-        if (serverCards.length === 0) {
-            // Fallback: look for any offline indicators
-            serverCards = document.querySelectorAll('[class*="offline"]');
-            if (serverCards.length === 0) return;
+        // Add Portainer widget header if containers are stopped
+        if (this.stoppedContainers > 0) {
+            const portainerWidget = this.getPortainerWidgetHeader();
+            if (portainerWidget) {
+                targets.push(portainerWidget);
+            }
         }
 
-        const targetCard = serverCards[this.patrolIndex % serverCards.length];
-        if (!targetCard) return;
+        if (targets.length === 0) return;
+
+        const targetElement = targets[this.patrolIndex % targets.length];
+        if (!targetElement) return;
 
         // getBoundingClientRect returns viewport-relative coordinates
         // which is perfect for position: fixed elements
-        const rect = targetCard.getBoundingClientRect();
+        const rect = targetElement.getBoundingClientRect();
 
         this.targetPosition = {
-            x: Math.max(10, rect.left - 60), // Position to the left of the card, min 10px from edge
+            x: Math.max(10, rect.left - 60), // Position to the left, min 10px from edge
             y: rect.top + (rect.height / 2)   // Viewport-relative Y position
         };
+    }
+
+    checkVisibleTargets() {
+        // Check if any offline targets are visible in the viewport
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
+
+        // Helper function to check if element is in viewport
+        const isInViewport = (el) => {
+            if (!el) return false;
+            const rect = el.getBoundingClientRect();
+            return rect.top < viewportHeight && rect.bottom > 0 &&
+                rect.left < viewportWidth && rect.right > 0;
+        };
+
+        // Check for offline server cards on servers page
+        const offlineCards = document.querySelectorAll('.server-showcase-card.offline');
+        for (const card of offlineCards) {
+            if (isInViewport(card)) return true;
+        }
+
+        // Check pyrodactyl widget on main dashboard
+        if (this.offlineServers.length > 0) {
+            const pyroWidget = document.getElementById('pyrodactyl-content');
+            if (pyroWidget && isInViewport(pyroWidget)) return true;
+        }
+
+        // Check Portainer widget if containers are stopped
+        if (this.stoppedContainers > 0) {
+            const portainerWidget = document.getElementById('portainer-content');
+            if (portainerWidget && isInViewport(portainerWidget)) return true;
+        }
+
+        return false;
+    }
+
+    getPortainerWidgetHeader() {
+        // Firefox-compatible way to find Portainer widget header
+        // First try direct ID selector
+        let widget = document.querySelector('#portainer-widget .widget-header');
+        if (widget) return widget;
+
+        // Fallback: find the widget containing portainer-content
+        const portainerContent = document.getElementById('portainer-content');
+        if (portainerContent) {
+            // Walk up to find the widget parent
+            let parent = portainerContent.parentElement;
+            while (parent && !parent.classList.contains('widget')) {
+                parent = parent.parentElement;
+            }
+            if (parent) {
+                return parent.querySelector('.widget-header');
+            }
+        }
+
+        return null;
     }
 
     startPatrol() {
         if (this.patrolTimer) return;
 
         this.patrolTimer = setInterval(() => {
-            if (this.offlineServers.length <= 1) return;
+            // Count total targets (servers + portainer if containers down)
+            const serverCount = this.offlineServers.length;
+            const containerTarget = this.stoppedContainers > 0 ? 1 : 0;
+            const totalTargets = serverCount + containerTarget;
 
-            // Move to next server
+            if (totalTargets <= 1) return;
+
+            // Move to next target
             this.patrolIndex += this.patrolDirection;
 
             // Bounce at ends
-            if (this.patrolIndex >= this.offlineServers.length - 1) {
+            if (this.patrolIndex >= totalTargets - 1) {
                 this.patrolDirection = -1;
             } else if (this.patrolIndex <= 0) {
                 this.patrolDirection = 1;
@@ -243,19 +311,40 @@ class MascotBuddy {
             clearInterval(this.patrolTimer);
             this.patrolTimer = null;
         }
+        this.patrolIndex = 0;
     }
 
     update() {
         if (this.isBeingDragged) return;
 
-        // Continuously update target position when patrolling
-        // This ensures the mascot follows the server card as you scroll
-        if (this.offlineServers.length > 0) {
+        // Check if any offline targets are visible on screen
+        const hasVisibleTargets = this.checkVisibleTargets();
+
+        // If patrolling but no targets visible, return to happy idle
+        if ((this.offlineServers.length > 0 || this.stoppedContainers > 0) && !hasVisibleTargets) {
+            // Targets scrolled off screen - go back to happy idle position
+            this.targetPosition = {
+                x: 20,
+                y: window.innerHeight / 2
+            };
+            if (this.mood === 'sad') {
+                this.setMood('happy');
+            }
+        } else if (this.offlineServers.length > 0 || this.stoppedContainers > 0) {
+            // Targets visible - patrol to them
             this.updatePatrolTarget();
+            if (this.mood !== 'sad') {
+                this.setMood('sad');
+            }
         }
 
+        // Clamp target position to viewport bounds (mascot should never go off screen)
+        const margin = 60; // Keep mascot slightly in from edges
+        this.targetPosition.x = Math.max(10, Math.min(this.targetPosition.x, window.innerWidth - margin));
+        this.targetPosition.y = Math.max(margin, Math.min(this.targetPosition.y, window.innerHeight - margin));
+
         // Smooth floating movement using lerp (no rubber-banding)
-        const lerpSpeed = 0.03; // Lower = slower, smoother float
+        const lerpSpeed = 0.015; // Slower, gentler float for small buddy
 
         const dx = this.targetPosition.x - this.position.x;
         const dy = this.targetPosition.y - this.position.y;
@@ -268,10 +357,14 @@ class MascotBuddy {
             this.position.y += dy * lerpSpeed;
 
             // Spawn particles while floating
-            if (distance > 5 && Math.random() < 0.1) {
+            if (distance > 5 && Math.random() < 0.08) {
                 this.spawnParticle();
             }
         }
+
+        // Also clamp actual position to viewport
+        this.position.x = Math.max(10, Math.min(this.position.x, window.innerWidth - margin));
+        this.position.y = Math.max(margin, Math.min(this.position.y, window.innerHeight - margin));
 
         // Apply position to element
         this.applyPosition();
@@ -420,15 +513,28 @@ class MascotBuddy {
     }
 
     setOfflineServers(servers) {
-        const hadOffline = this.offlineServers.length > 0;
+        const hadOffline = this.offlineServers.length > 0 || this.stoppedContainers > 0;
         this.offlineServers = servers || [];
 
-        if (this.offlineServers.length > 0) {
+        this.updateOfflineState(hadOffline);
+    }
+
+    setContainerStatus(stopped, running) {
+        const hadOffline = this.offlineServers.length > 0 || this.stoppedContainers > 0;
+        this.stoppedContainers = stopped || 0;
+
+        this.updateOfflineState(hadOffline);
+    }
+
+    updateOfflineState(hadOffline) {
+        const hasOffline = this.offlineServers.length > 0 || this.stoppedContainers > 0;
+
+        if (hasOffline) {
             this.setMood('sad');
             this.startPatrol();
         } else {
             if (hadOffline) {
-                // Celebrate! Servers are back online
+                // Celebrate! Everything is back online
                 this.playAnimation('bounce');
             }
             this.setMood('happy');

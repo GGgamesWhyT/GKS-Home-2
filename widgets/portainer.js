@@ -66,6 +66,11 @@ class PortainerWidget {
                 el.style.animation = 'none';
             });
         }
+
+        // Notify mascot about container status
+        if (window.mascotBuddy) {
+            window.mascotBuddy.setContainerStatus(stopped, running);
+        }
     }
 
     renderContainer(container) {
