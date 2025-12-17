@@ -81,7 +81,7 @@ class PyrodactylWidget {
             : '';
 
         return `
-            <div class="server-card ${statusClass}">
+            <div class="server-card ${statusClass}" onclick="window.location.href='/servers'" style="cursor: pointer" title="View all servers">
                 <div class="server-header">
                     <div class="server-info">
                         <span class="status-indicator ${statusClass}"></span>
@@ -95,7 +95,7 @@ class PyrodactylWidget {
                 ${connectionInfo ? `
                 <div class="connection-info">
                     <span class="connection-label">Connect:</span>
-                    <code class="connection-address" onclick="navigator.clipboard.writeText('${connectionInfo}').then(() => window.dashboard?.showNotification('Address copied!', 'success'))" title="Click to copy">
+                    <code class="connection-address" onclick="event.stopPropagation(); navigator.clipboard.writeText('${connectionInfo}').then(() => window.dashboard?.showNotification('Address copied!', 'success'))" title="Click to copy">
                         ${connectionInfo}
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>

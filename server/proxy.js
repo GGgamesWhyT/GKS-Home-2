@@ -537,6 +537,11 @@ app.get('/api/portainer/containers', async (req, res) => {
     }
 });
 
+// ===== Servers Page Route =====
+app.get('/servers', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'servers.html'));
+});
+
 // ===== Catch-all for SPA =====
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));

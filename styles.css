@@ -2684,3 +2684,384 @@ body.edit-mode .widget.dragging {
         box-shadow: 0 8px 20px rgba(0, 212, 170, 0.25);
     }
 }
+
+/* ===== Game Servers Page ===== */
+.servers-page {
+    padding-top: var(--spacing-lg);
+}
+
+/* Hero Section */
+.servers-hero {
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(0, 212, 170, 0.1) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl) var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: widgetFadeIn 0.6s ease forwards;
+}
+
+.servers-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(ellipse at 20% 30%, rgba(0, 212, 170, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-primary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: var(--spacing-sm);
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+/* Servers Grid */
+.servers-section {
+    margin-bottom: var(--spacing-xl);
+}
+
+.servers-showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: var(--spacing-xl);
+}
+
+/* Server Showcase Card */
+.server-showcase-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: widgetFadeIn 0.6s ease forwards;
+    opacity: 0;
+}
+
+.server-showcase-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.server-showcase-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.server-showcase-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.server-showcase-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.server-showcase-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(0, 212, 170, 0.2);
+}
+
+.server-showcase-card.offline {
+    opacity: 0.75;
+}
+
+.server-showcase-card.offline:hover {
+    opacity: 1;
+}
+
+/* Server Banner */
+.server-banner {
+    height: 160px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.server-banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(to top, var(--bg-card), transparent);
+    pointer-events: none;
+}
+
+.game-icon {
+    font-size: 4rem;
+    filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.5));
+    z-index: 1;
+}
+
+.server-status-overlay {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-md);
+    z-index: 2;
+}
+
+.server-status-overlay .status-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+/* Server Content */
+.server-showcase-content {
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.server-showcase-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.server-showcase-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.server-game-type {
+    font-size: 0.9rem;
+    color: var(--accent-primary);
+    font-weight: 500;
+}
+
+/* Connection Box */
+.server-connection-box {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.server-connection-box .connection-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.connection-address-large {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.connection-address-large:hover {
+    border-color: var(--accent-primary);
+    background: rgba(0, 212, 170, 0.05);
+}
+
+.connection-address-large svg {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: color 0.2s ease;
+}
+
+.connection-address-large:hover svg {
+    color: var(--accent-primary);
+}
+
+/* Server Stats Row */
+.server-stats-row {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+.server-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.server-stat .stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.stat-bar {
+    height: 6px;
+    background: var(--bg-primary);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.stat-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.server-stat .stat-value {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Server Actions */
+.server-actions {
+    margin-top: var(--spacing-sm);
+}
+
+.modpack-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: var(--bg-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+
+.modpack-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--accent-glow);
+}
+
+/* Error and Empty States */
+.servers-error-state,
+.servers-empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.servers-error-state svg,
+.servers-empty-state svg {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.servers-error-state h3,
+.servers-empty-state h3 {
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.servers-error-state p,
+.servers-empty-state p {
+    margin: 0;
+}
+
+/* Nav button styles for servers page */
+.home-btn {
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+}
+
+.home-btn:hover {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    background: rgba(0, 212, 170, 0.1);
+}
+
+.servers-btn {
+    color: #ff6b6b;
+    border-color: rgba(255, 107, 107, 0.3);
+}
+
+.servers-btn:hover,
+.servers-btn.active {
+    background: rgba(255, 107, 107, 0.1);
+    border-color: #ff6b6b;
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+}
+
+/* Responsive Servers Page */
+@media (max-width: 800px) {
+    .servers-showcase-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-title {
+        font-size: 1.8rem;
+    }
+
+    .servers-hero {
+        padding: var(--spacing-xl) var(--spacing-md);
+    }
+}
+
+@media (max-width: 480px) {
+    .server-showcase-content {
+        padding: var(--spacing-md);
+    }
+
+    .server-showcase-name {
+        font-size: 1.2rem;
+    }
+
+    .connection-address-large {
+        font-size: 0.9rem;
+    }
+
+    .server-stats-row {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+}
