@@ -4,7 +4,16 @@
 
 class PortainerWidget {
     constructor() {
-        this.container = document.getElementById('portainer-content');
+        this.containerId = 'portainer-content';
+        this.container = document.getElementById(this.containerId);
+    }
+
+    // Ensure we have a fresh container reference
+    getContainer() {
+        if (!this.container || !document.contains(this.container)) {
+            this.container = document.getElementById(this.containerId);
+        }
+        return this.container;
     }
 
     async load() {
@@ -12,18 +21,28 @@ class PortainerWidget {
             const data = await API.fetch('/portainer/containers');
             this.render(data);
         } catch (error) {
-            this.renderError();
+            // Only show error if container exists and was never loaded
+            const container = this.getContainer();
+            if (container && !container.classList.contains('loaded')) {
+                this.renderError();
+            }
+            // On refresh, keep existing content visible if API fails
         }
     }
 
     render(data) {
+        const container = this.getContainer();
+        if (!container) return; // Safety check
+
+        // Check if this is a refresh (not first load)
+        const isRefresh = container.classList.contains('loaded');
+
+        // If no data and this is a refresh, keep existing content
         if (!data || !data.containers || data.containers.length === 0) {
+            if (isRefresh) return; // Keep existing content on refresh
             this.renderEmpty();
             return;
         }
-
-        // Check if this is a refresh (not first load)
-        const isRefresh = this.container.classList.contains('loaded');
 
         // Count containers by status
         const running = data.containers.filter(c => c.State === 'running').length;
@@ -55,14 +74,14 @@ class PortainerWidget {
             ` : ''}
         `;
 
-        this.container.innerHTML = html;
+        container.innerHTML = html;
 
         // Prevent animation replay on refresh
         if (!isRefresh) {
-            this.container.classList.add('loaded');
+            container.classList.add('loaded');
         } else {
             // Disable animations on refresh to prevent visual glitches
-            this.container.querySelectorAll('.container-item, .container-stat').forEach(el => {
+            container.querySelectorAll('.container-item, .container-stat').forEach(el => {
                 el.style.animation = 'none';
             });
         }
@@ -100,7 +119,9 @@ class PortainerWidget {
     }
 
     renderError() {
-        this.container.innerHTML = `
+        const container = this.getContainer();
+        if (!container) return;
+        container.innerHTML = `
             <div class="error-state">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -114,7 +135,9 @@ class PortainerWidget {
     }
 
     renderEmpty() {
-        this.container.innerHTML = `
+        const container = this.getContainer();
+        if (!container) return;
+        container.innerHTML = `
             <div class="empty-state">
                 <p>No containers found</p>
             </div>

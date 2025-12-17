@@ -5,7 +5,16 @@
 
 class PyrodactylWidget {
     constructor() {
-        this.container = document.getElementById('pyrodactyl-content');
+        this.containerId = 'pyrodactyl-content';
+        this.container = document.getElementById(this.containerId);
+    }
+
+    // Ensure we have a fresh container reference
+    getContainer() {
+        if (!this.container || !document.contains(this.container)) {
+            this.container = document.getElementById(this.containerId);
+        }
+        return this.container;
     }
 
     async load() {
@@ -13,18 +22,28 @@ class PyrodactylWidget {
             const data = await API.fetch('/pyrodactyl/servers');
             this.render(data);
         } catch (error) {
-            this.renderError();
+            // Only show error if container exists and was never loaded
+            const container = this.getContainer();
+            if (container && !container.classList.contains('loaded')) {
+                this.renderError();
+            }
+            // On refresh, keep existing content visible if API fails
         }
     }
 
     render(data) {
+        const container = this.getContainer();
+        if (!container) return; // Safety check
+
+        // Check if this is a refresh (not first load)
+        const isRefresh = container.classList.contains('loaded');
+
+        // If no data and this is a refresh, keep existing content
         if (!data || !data.servers || data.servers.length === 0) {
+            if (isRefresh) return; // Keep existing content on refresh
             this.renderEmpty();
             return;
         }
-
-        // Check if this is a refresh (not first load)
-        const isRefresh = this.container.classList.contains('loaded');
 
         // Update mascot buddy with server status
         this.updateMascotStatus(data.servers);
@@ -35,18 +54,18 @@ class PyrodactylWidget {
             </div>
         `;
 
-        this.container.innerHTML = html;
+        container.innerHTML = html;
 
         // Prevent animation replay on refresh
         if (!isRefresh) {
-            this.container.classList.add('loaded');
+            container.classList.add('loaded');
         } else {
             // Remove animated class on refresh so static gradient is used instead of animation
-            this.container.querySelectorAll('.gauge-ring').forEach(el => {
+            container.querySelectorAll('.gauge-ring').forEach(el => {
                 el.classList.remove('animated');
             });
             // Disable card animations
-            this.container.querySelectorAll('.server-card').forEach(el => {
+            container.querySelectorAll('.server-card').forEach(el => {
                 el.style.animation = 'none';
             });
         }
@@ -189,7 +208,9 @@ class PyrodactylWidget {
     }
 
     renderError() {
-        this.container.innerHTML = `
+        const container = this.getContainer();
+        if (!container) return;
+        container.innerHTML = `
             <div class="error-state">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -203,7 +224,9 @@ class PyrodactylWidget {
     }
 
     renderEmpty() {
-        this.container.innerHTML = `
+        const container = this.getContainer();
+        if (!container) return;
+        container.innerHTML = `
             <div class="empty-state">
                 <p>No game servers found</p>
             </div>

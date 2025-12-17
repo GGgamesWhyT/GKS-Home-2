@@ -4,8 +4,17 @@
 
 class JellyfinWidget {
     constructor() {
-        this.container = document.getElementById('jellyfin-content');
+        this.containerId = 'jellyfin-content';
+        this.container = document.getElementById(this.containerId);
         this.previousItems = [];
+    }
+
+    // Ensure we have a fresh container reference
+    getContainer() {
+        if (!this.container || !document.contains(this.container)) {
+            this.container = document.getElementById(this.containerId);
+        }
+        return this.container;
     }
 
     async load() {
@@ -14,7 +23,12 @@ class JellyfinWidget {
             this.checkForNewContent(data.items || []);
             this.render(data);
         } catch (error) {
-            this.renderError();
+            // Only show error if container exists and was never loaded
+            const container = this.getContainer();
+            if (container && !container.classList.contains('loaded')) {
+                this.renderError();
+            }
+            // On refresh, keep existing content visible if API fails
         }
     }
 
@@ -33,25 +47,29 @@ class JellyfinWidget {
 
     render(data) {
         const items = data.items || [];
+        const container = this.getContainer();
+        if (!container) return; // Safety check
 
+        // Check if this is a refresh (not first load)
+        const isRefresh = container.classList.contains('loaded');
+
+        // If no items and this is a refresh, keep existing content
         if (items.length === 0) {
+            if (isRefresh) return; // Keep existing content on refresh
             this.renderEmpty();
             return;
         }
 
-        // Check if this is a refresh (not first load)
-        const isRefresh = this.container.classList.contains('loaded');
-
         // Wrap in a container that enables horizontal scrolling
         const html = `<div class="media-scroll-container">${items.slice(0, CONFIG.widgets.jellyfin.maxItems).map(item => this.renderMediaCard(item)).join('')}</div>`;
-        this.container.innerHTML = html;
+        container.innerHTML = html;
 
         // Prevent animation replay on refresh
         if (!isRefresh) {
-            this.container.classList.add('loaded');
+            container.classList.add('loaded');
         } else {
             // Disable animations on refresh to prevent visual glitches
-            this.container.querySelectorAll('.media-card').forEach(el => {
+            container.querySelectorAll('.media-card').forEach(el => {
                 el.style.animation = 'none';
             });
         }
@@ -95,7 +113,9 @@ class JellyfinWidget {
     }
 
     renderError() {
-        this.container.innerHTML = `
+        const container = this.getContainer();
+        if (!container) return;
+        container.innerHTML = `
             <div class="error-state">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -109,7 +129,9 @@ class JellyfinWidget {
     }
 
     renderEmpty() {
-        this.container.innerHTML = `
+        const container = this.getContainer();
+        if (!container) return;
+        container.innerHTML = `
             <div class="empty-state">
                 <p>No recently added content</p>
             </div>
