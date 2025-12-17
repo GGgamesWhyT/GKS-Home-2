@@ -2754,24 +2754,6 @@ body.edit-mode .widget.dragging {
     border-radius: var(--radius-xl);
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: widgetFadeIn 0.6s ease forwards;
-    opacity: 0;
-}
-
-.server-showcase-card:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-.server-showcase-card:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.server-showcase-card:nth-child(3) {
-    animation-delay: 0.3s;
-}
-
-.server-showcase-card:nth-child(4) {
-    animation-delay: 0.4s;
 }
 
 .server-showcase-card:hover {
@@ -3090,4 +3072,127 @@ body.edit-mode .widget.dragging {
         flex-direction: column;
         gap: var(--spacing-sm);
     }
+}
+
+/* Servers Page Mascot */
+.servers-mascot {
+    margin-bottom: var(--spacing-lg);
+    margin-left: 60px;
+    transform-origin: bottom center;
+}
+
+/* Smoother Server Card Animation */
+@keyframes serverCardSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.server-showcase-card {
+    animation: serverCardSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    opacity: 0;
+}
+
+/* Staggered animation delays for first 6 cards */
+.server-showcase-card:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.server-showcase-card:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.server-showcase-card:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.server-showcase-card:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.server-showcase-card:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.server-showcase-card:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+/* Hero content entrance */
+@keyframes heroFadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-title {
+    animation: heroFadeUp 0.6s ease-out 0.2s forwards;
+    opacity: 0;
+}
+
+.hero-subtitle {
+    animation: heroFadeUp 0.6s ease-out 0.35s forwards;
+    opacity: 0;
+}
+
+/* Guide page animations */
+@keyframes guideSectionSlideIn {
+    0% {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.guide-section {
+    animation: guideSectionSlideIn 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+.guide-section:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.guide-section:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.guide-section:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+.guide-section:nth-child(4) {
+    animation-delay: 0.4s;
+}
+
+.guide-section:nth-child(5) {
+    animation-delay: 0.5s;
+}
+
+.guide-section:nth-child(6) {
+    animation-delay: 0.6s;
+}
+
+.guide-section:nth-child(7) {
+    animation-delay: 0.7s;
+}
+
+.guide-hero {
+    animation: heroFadeUp 0.6s ease-out forwards;
 }

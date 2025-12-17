@@ -54,11 +54,100 @@ class ServersPage {
         // Initialize theme
         this.initTheme();
 
+        // Initialize mascot
+        this.initMascot();
+
         // Load servers
         await this.loadServers();
 
         // Start auto-refresh
         this.intervalId = setInterval(() => this.loadServers(), this.refreshInterval);
+    }
+
+    initMascot() {
+        this.mascot = document.getElementById('servers-mascot');
+        this.pupilLeft = document.getElementById('servers-pupil-left');
+        this.pupilRight = document.getElementById('servers-pupil-right');
+
+        if (!this.mascot || !this.pupilLeft || !this.pupilRight) return;
+
+        // Eye tracking
+        document.addEventListener('mousemove', (e) => this.updateMascotEyes(e));
+
+        // Click reactions
+        this.mascot.addEventListener('click', () => this.mascotReact('happy'));
+        this.mascot.addEventListener('dblclick', () => this.mascotReact('bounce'));
+    }
+
+    updateMascotEyes(e) {
+        if (!this.mascot || !this.pupilLeft || !this.pupilRight) return;
+
+        const mascotRect = this.mascot.getBoundingClientRect();
+        const mascotCenterX = mascotRect.left + mascotRect.width / 2;
+        const mascotCenterY = mascotRect.top + mascotRect.height / 2;
+
+        const deltaX = e.clientX - mascotCenterX;
+        const deltaY = e.clientY - mascotCenterY;
+
+        const maxMove = 3;
+        const distance = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+        const normalizedX = distance > 0 ? (deltaX / distance) * Math.min(distance / 50, 1) * maxMove : 0;
+        const normalizedY = distance > 0 ? (deltaY / distance) * Math.min(distance / 50, 1) * maxMove : 0;
+
+        this.pupilLeft.style.transform = `translate(${normalizedX}px, ${normalizedY}px)`;
+        this.pupilRight.style.transform = `translate(${normalizedX}px, ${normalizedY}px)`;
+    }
+
+    mascotReact(type) {
+        if (!this.mascot) return;
+
+        if (type === 'happy') {
+            this.mascot.classList.add('happy');
+            setTimeout(() => this.mascot.classList.remove('happy'), 2000);
+        } else if (type === 'bounce') {
+            // If sad, double-clicking cheers him up temporarily!
+            if (this.mascot.classList.contains('sad')) {
+                this.mascot.classList.remove('sad');
+                this.mascot.classList.add('happy');
+                this.mascot.style.animation = 'mascotBounce 0.5s ease';
+                setTimeout(() => {
+                    this.mascot.style.animation = '';
+                    this.mascot.classList.remove('happy');
+                    // Check if still has problems, go back to sad
+                    if (this.hasOfflineServer) {
+                        setTimeout(() => this.mascot.classList.add('sad'), 500);
+                    }
+                }, 2000);
+            } else {
+                this.mascot.style.animation = 'mascotBounce 0.5s ease';
+                setTimeout(() => this.mascot.style.animation = '', 500);
+            }
+        }
+    }
+
+    updateMascotMood(servers) {
+        if (!this.mascot) return;
+
+        // Check if any server is offline
+        this.hasOfflineServer = servers.some(server => {
+            const status = (server.status || '').toLowerCase();
+            return status !== 'running' && status !== 'online' && status !== 'started' && status !== 'starting';
+        });
+
+        // Check for starting servers (worried expression)
+        const hasStartingServer = servers.some(server => {
+            const status = (server.status || '').toLowerCase();
+            return status === 'starting' || status === 'start';
+        });
+
+        // Update mascot expression
+        this.mascot.classList.remove('sad', 'worried', 'happy');
+
+        if (this.hasOfflineServer) {
+            this.mascot.classList.add('sad');
+        } else if (hasStartingServer) {
+            this.mascot.classList.add('worried');
+        }
     }
 
     initTheme() {
@@ -82,7 +171,9 @@ class ServersPage {
             if (!response.ok) throw new Error('Failed to fetch servers');
 
             const data = await response.json();
-            this.render(data.servers || []);
+            const servers = data.servers || [];
+            this.render(servers);
+            this.updateMascotMood(servers);
         } catch (error) {
             console.error('Error loading servers:', error);
             this.renderError();
