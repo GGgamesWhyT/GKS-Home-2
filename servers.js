@@ -108,8 +108,22 @@ class ServersPage {
             return;
         }
 
+        // Check if this is a refresh (not first load)
+        const isRefresh = this.container.classList.contains('loaded');
+
         const html = servers.map(server => this.renderServerCard(server)).join('');
         this.container.innerHTML = html;
+
+        // Mark as loaded to prevent animations on refresh
+        if (!isRefresh) {
+            this.container.classList.add('loaded');
+        } else {
+            // Remove animation from cards on refresh
+            this.container.querySelectorAll('.server-showcase-card').forEach(card => {
+                card.style.animation = 'none';
+                card.style.opacity = '1';
+            });
+        }
     }
 
     renderServerCard(server) {

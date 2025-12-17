@@ -22,6 +22,9 @@ class ProxmoxWidget {
             return;
         }
 
+        // Check if this is a refresh (not first load)
+        const isRefresh = this.container.classList.contains('loaded');
+
         // Sort nodes in specific order: proxmox, proxmox2, proxmox3
         const nodeOrder = ['proxmox', 'proxmox2', 'proxmox3'];
         const sortedNodes = [...data.nodes].sort((a, b) => {
@@ -40,6 +43,16 @@ class ProxmoxWidget {
         `;
 
         this.container.innerHTML = html;
+
+        // Prevent animation replay on refresh
+        if (!isRefresh) {
+            this.container.classList.add('loaded');
+        } else {
+            // Remove animation from gauges on refresh
+            this.container.querySelectorAll('.gauge-ring, .node-card').forEach(el => {
+                el.style.animation = 'none';
+            });
+        }
     }
 
     renderNode(node) {

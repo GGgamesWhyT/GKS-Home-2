@@ -23,6 +23,9 @@ class PyrodactylWidget {
             return;
         }
 
+        // Check if this is a refresh (not first load)
+        const isRefresh = this.container.classList.contains('loaded');
+
         const html = `
             <div class="server-grid">
                 ${data.servers.map(server => this.renderServer(server)).join('')}
@@ -30,6 +33,17 @@ class PyrodactylWidget {
         `;
 
         this.container.innerHTML = html;
+
+        // Prevent animation replay on refresh
+        if (!isRefresh) {
+            this.container.classList.add('loaded');
+        } else {
+            // Remove animation from elements on refresh
+            this.container.querySelectorAll('.server-card, .gauge-ring').forEach(el => {
+                el.style.animation = 'none';
+                el.classList.remove('animated');
+            });
+        }
     }
 
     renderServer(server) {

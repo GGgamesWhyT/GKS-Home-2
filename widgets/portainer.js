@@ -22,6 +22,9 @@ class PortainerWidget {
             return;
         }
 
+        // Check if this is a refresh (not first load)
+        const isRefresh = this.container.classList.contains('loaded');
+
         // Count containers by status
         const running = data.containers.filter(c => c.State === 'running').length;
         const stopped = data.containers.filter(c => c.State === 'exited' || c.State === 'dead').length;
@@ -53,6 +56,15 @@ class PortainerWidget {
         `;
 
         this.container.innerHTML = html;
+
+        // Prevent animation replay on refresh
+        if (!isRefresh) {
+            this.container.classList.add('loaded');
+        } else {
+            this.container.querySelectorAll('.container-item, .container-stat').forEach(el => {
+                el.style.animation = 'none';
+            });
+        }
     }
 
     renderContainer(container) {

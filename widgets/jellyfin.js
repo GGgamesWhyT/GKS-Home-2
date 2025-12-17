@@ -39,9 +39,21 @@ class JellyfinWidget {
             return;
         }
 
+        // Check if this is a refresh (not first load)
+        const isRefresh = this.container.classList.contains('loaded');
+
         // Wrap in a container that enables horizontal scrolling
         const html = `<div class="media-scroll-container">${items.slice(0, CONFIG.widgets.jellyfin.maxItems).map(item => this.renderMediaCard(item)).join('')}</div>`;
         this.container.innerHTML = html;
+
+        // Prevent animation replay on refresh
+        if (!isRefresh) {
+            this.container.classList.add('loaded');
+        } else {
+            this.container.querySelectorAll('.media-card').forEach(el => {
+                el.style.animation = 'none';
+            });
+        }
     }
 
     renderMediaCard(item) {

@@ -39,6 +39,9 @@ class JellyseerrWidget {
             return;
         }
 
+        // Check if this is a refresh (not first load)
+        const isRefresh = this.container.classList.contains('loaded');
+
         const html = `
             <div class="request-list">
                 ${requests.slice(0, CONFIG.widgets.jellyseerr.maxItems).map(request => this.renderRequestItem(request)).join('')}
@@ -46,6 +49,15 @@ class JellyseerrWidget {
         `;
 
         this.container.innerHTML = html;
+
+        // Prevent animation replay on refresh
+        if (!isRefresh) {
+            this.container.classList.add('loaded');
+        } else {
+            this.container.querySelectorAll('.request-item').forEach(el => {
+                el.style.animation = 'none';
+            });
+        }
     }
 
     renderRequestItem(request) {
