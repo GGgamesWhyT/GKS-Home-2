@@ -132,27 +132,25 @@ class ServersPage {
     }
 
     updateMascotMood(servers) {
-        if (!this.mascot) return;
-
-        // Check if any server is offline
-        this.hasOfflineServer = servers.some(server => {
+        // Get offline and starting servers
+        const offlineServers = servers.filter(server => {
             const status = (server.status || '').toLowerCase();
             return status !== 'running' && status !== 'online' && status !== 'started' && status !== 'starting';
         });
 
-        // Check for starting servers (worried expression)
         const hasStartingServer = servers.some(server => {
             const status = (server.status || '').toLowerCase();
             return status === 'starting' || status === 'start';
         });
 
-        // Update mascot expression
-        this.mascot.classList.remove('sad', 'worried', 'happy');
+        // Update global mascot buddy
+        if (window.mascotBuddy) {
+            window.mascotBuddy.setOfflineServers(offlineServers);
 
-        if (this.hasOfflineServer) {
-            this.mascot.classList.add('sad');
-        } else if (hasStartingServer) {
-            this.mascot.classList.add('worried');
+            // Set worried if servers are starting but none offline
+            if (offlineServers.length === 0 && hasStartingServer) {
+                window.mascotBuddy.setMood('worried');
+            }
         }
     }
 

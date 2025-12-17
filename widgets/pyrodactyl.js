@@ -26,6 +26,9 @@ class PyrodactylWidget {
         // Check if this is a refresh (not first load)
         const isRefresh = this.container.classList.contains('loaded');
 
+        // Update mascot buddy with server status
+        this.updateMascotStatus(data.servers);
+
         const html = `
             <div class="server-grid">
                 ${data.servers.map(server => this.renderServer(server)).join('')}
@@ -38,11 +41,37 @@ class PyrodactylWidget {
         if (!isRefresh) {
             this.container.classList.add('loaded');
         } else {
-            // Remove animation from elements on refresh
-            this.container.querySelectorAll('.server-card, .gauge-ring').forEach(el => {
-                el.style.animation = 'none';
+            // Remove animated class on refresh so static gradient is used instead of animation
+            this.container.querySelectorAll('.gauge-ring').forEach(el => {
                 el.classList.remove('animated');
             });
+            // Disable card animations
+            this.container.querySelectorAll('.server-card').forEach(el => {
+                el.style.animation = 'none';
+            });
+        }
+    }
+
+    updateMascotStatus(servers) {
+        if (!window.mascotBuddy) return;
+
+        // Get offline and starting servers
+        const offlineServers = servers.filter(server => {
+            const status = (server.status || '').toLowerCase();
+            return status !== 'running' && status !== 'online' && status !== 'started' && status !== 'starting';
+        });
+
+        const hasStartingServer = servers.some(server => {
+            const status = (server.status || '').toLowerCase();
+            return status === 'starting' || status === 'start';
+        });
+
+        // Update mascot buddy
+        window.mascotBuddy.setOfflineServers(offlineServers);
+
+        // Set worried if servers are starting but none offline
+        if (offlineServers.length === 0 && hasStartingServer) {
+            window.mascotBuddy.setMood('worried');
         }
     }
 

@@ -50,6 +50,7 @@ class JellyfinWidget {
         if (!isRefresh) {
             this.container.classList.add('loaded');
         } else {
+            // Disable animations on refresh to prevent visual glitches
             this.container.querySelectorAll('.media-card').forEach(el => {
                 el.style.animation = 'none';
             });

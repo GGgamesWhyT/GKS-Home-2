@@ -61,6 +61,7 @@ class PortainerWidget {
         if (!isRefresh) {
             this.container.classList.add('loaded');
         } else {
+            // Disable animations on refresh to prevent visual glitches
             this.container.querySelectorAll('.container-item, .container-stat').forEach(el => {
                 el.style.animation = 'none';
             });

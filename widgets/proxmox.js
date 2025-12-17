@@ -48,8 +48,12 @@ class ProxmoxWidget {
         if (!isRefresh) {
             this.container.classList.add('loaded');
         } else {
-            // Remove animation from gauges on refresh
-            this.container.querySelectorAll('.gauge-ring, .node-card').forEach(el => {
+            // Remove animated class on refresh so static gradient is used instead of animation
+            this.container.querySelectorAll('.gauge-ring').forEach(el => {
+                el.classList.remove('animated');
+            });
+            // Disable card animations
+            this.container.querySelectorAll('.node-card').forEach(el => {
                 el.style.animation = 'none';
             });
         }
