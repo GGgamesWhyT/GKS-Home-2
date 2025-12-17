@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoneBlock 4 Modpack Guide | GKS Home</title>
+    <meta name="description" content="How to install StoneBlock 4 via CurseForge and play on the GKS server">
+    <link rel="icon" type="image/jpeg" href="../favicon.jpg">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .guide-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .guide-hero {
+            background: linear-gradient(135deg, #3b5998 0%, #232323 50%, #1a472a 100%);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-2xl);
+            margin-bottom: var(--spacing-xl);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .guide-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, var(--bg-primary), transparent);
+            pointer-events: none;
+        }
+
+        .guide-hero h1 {
+            position: relative;
+            z-index: 1;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .guide-hero p {
+            position: relative;
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+        }
+
+        .guide-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .guide-section h2 {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            color: var(--text-primary);
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            font-weight: 700;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .guide-section p,
+        .guide-section li {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .guide-section ul,
+        .guide-section ol {
+            margin-left: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .guide-section li {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .screenshot-placeholder {
+            background: var(--bg-tertiary);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            text-align: center;
+            color: var(--text-muted);
+            margin: var(--spacing-md) 0;
+        }
+
+        .screenshot-placeholder svg {
+            margin-bottom: var(--spacing-sm);
+            opacity: 0.5;
+        }
+
+        .guide-screenshot {
+            width: 100%;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin: var(--spacing-md) 0;
+        }
+
+        .download-box {
+            background: linear-gradient(135deg, #f16436, #e04e1b);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .download-box .info h3 {
+            color: #fff;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .download-box .info p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 0;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: #fff;
+            color: #f16436;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .code-block {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-md);
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: var(--accent-primary);
+            overflow-x: auto;
+            margin: var(--spacing-md) 0;
+        }
+
+        .tip-box {
+            background: rgba(0, 212, 170, 0.1);
+            border-left: 4px solid var(--accent-primary);
+            padding: var(--spacing-md);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: var(--spacing-md) 0;
+        }
+
+        .tip-box strong {
+            color: var(--accent-primary);
+        }
+
+        .warning-box {
+            background: rgba(255, 217, 61, 0.1);
+            border-left: 4px solid var(--status-warning);
+            padding: var(--spacing-md);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            margin: var(--spacing-md) 0;
+        }
+
+        .warning-box strong {
+            color: var(--status-warning);
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: var(--spacing-lg);
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+        }
+
+        @media (max-width: 600px) {
+            .guide-hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .download-box {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-container">
+                <a href="/">
+                    <img src="../Logo's/gks-high-resolution-logo-transparent.png" alt="GKS Logo" class="logo">
+                </a>
+            </div>
+            <div class="header-right">
+                <nav class="nav">
+                    <a href="/" class="nav-btn home-btn" title="Home Dashboard">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="/servers" class="nav-btn servers-btn" title="Game Servers">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+                            <line x1="12" y1="22" x2="12" y2="15.5"></line>
+                            <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+                        </svg>
+                        <span>Game Servers</span>
+                    </a>
+                </nav>
+                <div class="header-actions">
+                    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode"
+                        title="Toggle Theme">
+                        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="guide-container">
+            <a href="/servers" class="back-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Game Servers
+            </a>
+
+            <!-- Hero -->
+            <div class="guide-hero">
+                <h1>⛏️ StoneBlock 4 Modpack Guide</h1>
+                <p>Learn how to install StoneBlock 4 via CurseForge in Prism Launcher</p>
+            </div>
+
+            <!-- CurseForge Link -->
+            <section class="guide-section">
+                <div class="download-box">
+                    <div class="info">
+                        <h3>StoneBlock 4 on CurseForge</h3>
+                        <p>Official modpack from FTB/CurseForge</p>
+                    </div>
+                    <a href="https://www.curseforge.com/minecraft/modpacks/ftb-stoneblock-4" target="_blank"
+                        rel="noopener" class="download-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                        View on CurseForge
+                    </a>
+                </div>
+            </section>
+
+            <!-- Step 1: Install Prism Launcher -->
+            <section class="guide-section">
+                <h2><span class="step-number">1</span> Install Prism Launcher</h2>
+
+                <p>If you haven't already, install Prism Launcher first.</p>
+
+                <ol>
+                    <li>Visit <a href="https://prismlauncher.org/download/" target="_blank"
+                            rel="noopener">prismlauncher.org/download</a></li>
+                    <li>Download the installer for your operating system</li>
+                    <li>Run the installer and follow the on-screen instructions</li>
+                    <li>Launch Prism Launcher and log in with your Microsoft account</li>
+                </ol>
+
+                <div class="screenshot-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <p>Screenshot: Prism Launcher main window</p>
+                </div>
+
+                <div class="tip-box">
+                    <strong>💡 Already have Prism?</strong> Skip to Step 2!
+                </div>
+            </section>
+
+            <!-- Step 2: Add CurseForge Support -->
+            <section class="guide-section">
+                <h2><span class="step-number">2</span> Enable CurseForge in Prism Launcher</h2>
+
+                <p>Before importing CurseForge modpacks, you may need to configure API access.</p>
+
+                <ol>
+                    <li>In Prism Launcher, go to <strong>Settings</strong> (gear icon)</li>
+                    <li>Navigate to <strong>APIs</strong> in the left sidebar</li>
+                    <li>Under <strong>CurseForge</strong>, you have two options:
+                        <ul>
+                            <li><strong>Option A:</strong> Get a free API key from <a
+                                    href="https://console.curseforge.com/" target="_blank" rel="noopener">CurseForge
+                                    Console</a> (recommended)</li>
+                            <li><strong>Option B:</strong> Leave it blank (will work for most modpacks)</li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>Close</strong> to save settings</li>
+                </ol>
+
+                <div class="screenshot-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <p>Screenshot: API settings in Prism Launcher</p>
+                </div>
+            </section>
+
+            <!-- Step 3: Search for StoneBlock 4 -->
+            <section class="guide-section">
+                <h2><span class="step-number">3</span> Add StoneBlock 4 via CurseForge</h2>
+
+                <p>Now we'll import StoneBlock 4 directly from CurseForge.</p>
+
+                <ol>
+                    <li>Click <strong>"Add Instance"</strong> (the + button in the top-left)</li>
+                    <li>Select <strong>"CurseForge"</strong> from the left sidebar</li>
+                    <li>In the search box, type <strong>"StoneBlock 4"</strong> or <strong>"FTB StoneBlock 4"</strong>
+                    </li>
+                    <li>Find <strong>FTB StoneBlock 4</strong> in the results and click on it</li>
+                    <li>Choose the version that matches the server (usually the latest)</li>
+                    <li>Click <strong>"OK"</strong> to start downloading</li>
+                </ol>
+
+                <div class="screenshot-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <p>Screenshot: CurseForge search showing StoneBlock 4</p>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Be Patient:</strong> StoneBlock 4 is a large modpack (~200+ mods). Download may take 5-15
+                    minutes depending on your internet speed.
+                </div>
+            </section>
+
+            <!-- Step 4: Launch and Connect -->
+            <section class="guide-section">
+                <h2><span class="step-number">4</span> Launch and Connect to Server</h2>
+
+                <p>Once the download completes, you're ready to play!</p>
+
+                <ol>
+                    <li>Double-click the <strong>StoneBlock 4 instance</strong> to launch</li>
+                    <li>Wait for Minecraft to fully load (first launch takes a while due to mod loading)</li>
+                    <li>Click <strong>"Multiplayer"</strong></li>
+                    <li>Click <strong>"Add Server"</strong></li>
+                    <li>Enter the server address from the <a href="/servers">Game Servers page</a></li>
+                    <li>Click <strong>"Done"</strong> and then <strong>"Join Server"</strong></li>
+                </ol>
+
+                <div class="screenshot-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <p>Screenshot: StoneBlock 4 main menu</p>
+                </div>
+
+                <div class="tip-box">
+                    <strong>🎉 You're all set!</strong> Enjoy mining through stone in StoneBlock 4!
+                </div>
+            </section>
+
+            <!-- Memory Settings -->
+            <section class="guide-section">
+                <h2>⚙️ Recommended Memory Settings</h2>
+
+                <p>StoneBlock 4 needs more RAM than vanilla Minecraft. Here's how to increase it:</p>
+
+                <ol>
+                    <li>Right-click the <strong>StoneBlock 4 instance</strong></li>
+                    <li>Select <strong>"Edit"</strong></li>
+                    <li>Go to <strong>"Settings"</strong> in the sidebar</li>
+                    <li>Check <strong>"Memory"</strong> to enable custom settings</li>
+                    <li>Set <strong>Maximum memory</strong> to:
+                        <ul>
+                            <li><strong>6144 MB</strong> (6GB) - Minimum recommended</li>
+                            <li><strong>8192 MB</strong> (8GB) - Optimal for smooth gameplay</li>
+                        </ul>
+                    </li>
+                    <li>Click <strong>"Close"</strong> to save</li>
+                </ol>
+
+                <div class="screenshot-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <p>Screenshot: Memory settings in instance configuration</p>
+                </div>
+
+                <div class="warning-box">
+                    <strong>⚠️ Not Enough RAM?</strong> If you only have 8GB of system RAM, allocate no more than 4-5GB
+                    to Minecraft. Leave room for your OS!
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section class="guide-section">
+                <h2>🔧 Troubleshooting</h2>
+
+                <p><strong>Game crashes on launch?</strong></p>
+                <ul>
+                    <li>Make sure you have Java 17 or higher installed</li>
+                    <li>Increase allocated RAM to at least 6GB</li>
+                    <li>Try updating your graphics drivers</li>
+                </ul>
+
+                <p><strong>CurseForge modpack not showing up?</strong></p>
+                <ul>
+                    <li>Try getting a free API key from <a href="https://console.curseforge.com/" target="_blank"
+                            rel="noopener">CurseForge Console</a></li>
+                    <li>Make sure you're connected to the internet</li>
+                    <li>Try searching for "FTB StoneBlock 4" instead of just "StoneBlock"</li>
+                </ul>
+
+                <p><strong>Can't connect to server?</strong></p>
+                <ul>
+                    <li>Double-check the server address on the <a href="/servers">Game Servers page</a></li>
+                    <li>Make sure your modpack version matches the server version</li>
+                    <li>Check if the server is online (look at the status indicator)</li>
+                </ul>
+
+                <p><strong>Need more help?</strong></p>
+                <p>Reach out on Discord or check the <a href="https://prismlauncher.org/wiki/" target="_blank"
+                        rel="noopener">Prism Launcher Wiki</a> for more detailed guides.</p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>GKS &copy; 2025</p>
+    </footer>
+
+    <script>
+        // Theme toggle
+        const savedTheme = localStorage.getItem('gks-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
+        document.getElementById('theme-toggle')?.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('gks-theme', newTheme);
+        });
+    </script>
+</body>
+
+</html>

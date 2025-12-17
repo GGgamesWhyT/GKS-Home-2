@@ -542,6 +542,15 @@ app.get('/servers', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'servers.html'));
 });
 
+// ===== Guide Pages Routes =====
+app.get('/guides/cobblemon.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'guides', 'cobblemon.html'));
+});
+
+app.get('/guides/stoneblock4.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'guides', 'stoneblock4.html'));
+});
+
 // ===== Catch-all for SPA =====
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'index.html'));

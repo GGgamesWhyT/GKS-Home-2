@@ -15,14 +15,19 @@ class ServersPage {
                 name: 'Minecraft',
                 variant: 'StoneBlock 4',
                 gradient: 'linear-gradient(135deg, #3b5998 0%, #232323 50%, #1a472a 100%)',
-                icon: '⛏️'
+                icon: '⛏️',
+                modpackUrl: 'https://www.curseforge.com/minecraft/modpacks/ftb-stoneblock-4',
+                modpackLabel: 'CurseForge',
+                guideUrl: '/guides/stoneblock4.html'
             },
             cobblemon: {
                 name: 'Minecraft',
                 variant: 'Cobblemon',
                 gradient: 'linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 50%, #2c3e50 100%)',
                 icon: '🎮',
-                modpackUrl: '#' // Placeholder - update with actual URL
+                modpackUrl: '#', // Placeholder - update with actual mrpack URL
+                modpackLabel: 'Modpack',
+                guideUrl: '/guides/cobblemon.html'
             },
             satisfactory: {
                 name: 'Satisfactory',
@@ -142,17 +147,41 @@ class ServersPage {
             ? `${gameType.name} • ${gameType.variant}`
             : gameType.name;
 
-        // Modpack button (only for Cobblemon)
-        const modpackButton = gameType.modpackUrl
-            ? `<a href="${gameType.modpackUrl}" class="modpack-btn" target="_blank" rel="noopener">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                Download Modpack
-            </a>`
-            : '';
+        // Build action buttons (modpack + guide)
+        let actionButtons = '';
+
+        if (gameType.modpackUrl || gameType.guideUrl) {
+            actionButtons = '<div class="server-actions">';
+
+            // Modpack download button
+            if (gameType.modpackUrl) {
+                const modpackLabel = gameType.modpackLabel || 'Modpack';
+                actionButtons += `
+                    <a href="${gameType.modpackUrl}" class="modpack-btn" target="_blank" rel="noopener">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        ${modpackLabel}
+                    </a>`;
+            }
+
+            // Guide button
+            if (gameType.guideUrl) {
+                actionButtons += `
+                    <a href="${gameType.guideUrl}" class="guide-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        Setup Guide
+                    </a>`;
+            }
+
+            actionButtons += '</div>';
+        }
 
         return `
             <div class="server-showcase-card ${statusClass}">
@@ -198,7 +227,7 @@ class ServersPage {
                         </div>
                     </div>
 
-                    ${modpackButton ? `<div class="server-actions">${modpackButton}</div>` : ''}
+                    ${actionButtons}
                 </div>
             </div>
         `;

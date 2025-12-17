@@ -2954,6 +2954,9 @@ body.edit-mode .widget.dragging {
 /* Server Actions */
 .server-actions {
     margin-top: var(--spacing-sm);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
 }
 
 .modpack-btn {
@@ -2973,6 +2976,29 @@ body.edit-mode .widget.dragging {
 
 .modpack-btn:hover {
     transform: translateY(-2px);
+    box-shadow: 0 8px 25px var(--accent-glow);
+}
+
+.guide-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.guide-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px var(--accent-glow);
     box-shadow: 0 8px 25px var(--accent-glow);
 }
 
