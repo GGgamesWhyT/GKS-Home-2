@@ -4126,7 +4126,13 @@ body.edit-mode .widget.dragging {
     cursor: grab;
     user-select: none;
     touch-action: none;
+    -webkit-transition: filter 0.3s ease;
     transition: filter 0.3s ease;
+    /* Chrome Android hardware acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 .mascot-buddy:hover {
@@ -4324,32 +4330,40 @@ body.edit-mode .widget.dragging {
     position: absolute;
     bottom: -8px;
     left: 50%;
-    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%) scaleY(0);
+    transform: translateX(-50%) scaleY(0);
+    -webkit-transform-origin: top center;
+    transform-origin: top center;
     width: 4px;
-    height: 0;
+    height: 15px;
     background: linear-gradient(180deg, #ffc107 0%, #ff5722 50%, transparent 100%);
     border-radius: 50%;
-    transition: height 0.3s ease;
+    -webkit-transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
     box-shadow: 0 0 8px #ff5722;
 }
 
 /* Full thruster effect during warp mode */
 .mascot-buddy.warp-mode .thruster::after {
-    height: 15px;
-    animation: thrusterFlicker 0.1s ease-in-out infinite;
+    -webkit-transform: translateX(-50%) scaleY(1);
+    transform: translateX(-50%) scaleY(1);
+    -webkit-animation: thrusterFlicker 0.15s ease-in-out infinite;
+    animation: thrusterFlicker 0.15s ease-in-out infinite;
 }
 
 @keyframes thrusterFlicker {
 
     0%,
     100% {
-        height: 15px;
+        -webkit-transform: translateX(-50%) scaleY(1);
+        transform: translateX(-50%) scaleY(1);
         opacity: 1;
     }
 
     50% {
-        height: 12px;
-        opacity: 0.8;
+        -webkit-transform: translateX(-50%) scaleY(0.8);
+        transform: translateX(-50%) scaleY(0.8);
+        opacity: 0.85;
     }
 }
 
@@ -4820,11 +4834,28 @@ body:has(.mascot-buddy) .servers-mascot {
 @media (max-width: 768px) {
     .mascot-buddy {
         /* Keep same size on mobile */
-        transform: scale(1);
+        -webkit-transform: scale(1) translateZ(0);
+        transform: scale(1) translateZ(0);
     }
 
     .mascot-buddy .mascot-tool {
         font-size: 14px;
+    }
+
+    /* Simplify warp animations on mobile for Chrome Android */
+    .warp-overlay.active .warp-stars,
+    .warp-overlay.active .warp-stars-2,
+    .warp-overlay.active .warp-stars-3 {
+        -webkit-animation-duration: 0.8s !important;
+        animation-duration: 0.8s !important;
+    }
+
+    /* Reduce thruster complexity on mobile */
+    .mascot-buddy.warp-mode .thruster::after {
+        -webkit-animation: none;
+        animation: none;
+        -webkit-transform: translateX(-50%) scaleY(1);
+        transform: translateX(-50%) scaleY(1);
     }
 }
 
@@ -4860,9 +4891,12 @@ body:has(.mascot-buddy) .servers-mascot {
     width: 2px;
     height: 2px;
     background: transparent;
+    -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
     border-radius: 50%;
     will-change: transform, opacity;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 /* Layer 1: Distant stars (Small, dense, slow) */
@@ -4875,6 +4909,7 @@ body:has(.mascot-buddy) .servers-mascot {
     background-size: 80px 80px, 130px 130px;
     background-position: 0 0, 40px 60px;
     opacity: 0;
+    -webkit-transform: translate(-50%, -50%) scale(0.1);
     transform: translate(-50%, -50%) scale(0.1);
 }
 
@@ -4888,6 +4923,7 @@ body:has(.mascot-buddy) .servers-mascot {
     background-size: 250px 250px, 180px 180px;
     background-position: 20px 20px, 100px 100px;
     opacity: 0;
+    -webkit-transform: translate(-50%, -50%) scale(0.1) rotate(45deg);
     transform: translate(-50%, -50%) scale(0.1) rotate(45deg);
 }
 
@@ -4900,6 +4936,7 @@ body:has(.mascot-buddy) .servers-mascot {
     background-size: 400px 400px;
     background-position: 50px 50px;
     opacity: 0;
+    -webkit-transform: translate(-50%, -50%) scale(0.1) rotate(-30deg);
     transform: translate(-50%, -50%) scale(0.1) rotate(-30deg);
 }
 
@@ -4949,6 +4986,7 @@ body:has(.mascot-buddy) .servers-mascot {
 @keyframes warpZoom {
     0% {
         opacity: 0;
+        -webkit-transform: translate(-50%, -50%) scale(0.1);
         transform: translate(-50%, -50%) scale(0.1);
     }
 
@@ -4958,6 +4996,7 @@ body:has(.mascot-buddy) .servers-mascot {
 
     100% {
         opacity: 0.8;
+        -webkit-transform: translate(-50%, -50%) scale(4);
         transform: translate(-50%, -50%) scale(4);
     }
 }
@@ -4965,11 +5004,13 @@ body:has(.mascot-buddy) .servers-mascot {
 @keyframes warpArrive {
     0% {
         opacity: 0.8;
+        -webkit-transform: translate(-50%, -50%) scale(4);
         transform: translate(-50%, -50%) scale(4);
     }
 
     100% {
         opacity: 0;
+        -webkit-transform: translate(-50%, -50%) scale(6);
         transform: translate(-50%, -50%) scale(6);
     }
 }
@@ -5059,7 +5100,7 @@ body:has(.mascot-buddy) .servers-mascot {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    perspective: 500px;
+    /* perspective removed for Chrome Android compatibility */
 }
 
 .random-star {
@@ -5069,20 +5110,31 @@ body:has(.mascot-buddy) .servers-mascot {
     animation: starFly 3s linear infinite;
     opacity: 0;
     box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+    /* Chrome Android hardware acceleration */
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 
 @keyframes starFly {
     0% {
-        transform: scale(0.1) translateZ(-500px);
+        -webkit-transform: scale(0.1);
+        transform: scale(0.1);
         opacity: 0;
     }
 
-    20% {
+    10% {
+        opacity: 0.6;
+    }
+
+    70% {
         opacity: 0.8;
     }
 
     100% {
-        transform: scale(2) translateZ(500px);
+        -webkit-transform: scale(3);
+        transform: scale(3);
         opacity: 0;
     }
 }
