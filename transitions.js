@@ -1,12 +1,12 @@
 /**
  * Page Transitions Manager
- * Handles the "Blast Off" warp speed effect between pages
+ * Handles transitions between pages using the loading screen with stars and progress bar
  */
 
 class PageTransitionManager {
     constructor() {
         this.isAnimating = false;
-        this.warpDuration = 800; // ms to wait before navigating
+        this.warpDuration = 1000; // ms to wait before navigating
     }
 
     init() {
@@ -36,26 +36,98 @@ class PageTransitionManager {
 
         console.log('🚀 Preparing for warp speed...');
 
-        // 1. Create/Get Overlay
-        const overlay = this.getOverlay();
+        // 1. Create the transition overlay (loading screen style)
+        const overlay = this.createTransitionOverlay();
 
-        // 2. Summon Mascot to center
+        // 2. Summon Mascot to left side
         if (window.mascotBuddy) {
             window.mascotBuddy.enterWarpMode();
         }
 
-        // 3. Start Warp Effect
-        requestAnimationFrame(() => {
-            overlay.classList.add('active');
-            document.body.classList.add('warping');
-        });
+        // 3. Animate the progress bar
+        this.animateProgress(overlay);
 
-        // 4. Wait for acceleration, then navigate
+        // 4. Wait for animation, then navigate
         setTimeout(() => {
-            // Save state that we are warping
+            // Save state that we are transitioning
             sessionStorage.setItem('isWarping', 'true');
             window.location.href = url;
         }, this.warpDuration);
+    }
+
+    createTransitionOverlay() {
+        // Remove existing if present
+        const existing = document.getElementById('transition-overlay');
+        if (existing) existing.remove();
+
+        // Generate random stars
+        const starCount = 100;
+        let starsHTML = '';
+        for (let i = 0; i < starCount; i++) {
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = 1 + Math.random() * 2;
+            const duration = 2 + Math.random() * 3;
+            const delay = Math.random() * 4;
+            starsHTML += `<div class="random-star" style="
+                left: ${x}%;
+                top: ${y}%;
+                width: ${size}px;
+                height: ${size}px;
+                animation-duration: ${duration}s;
+                animation-delay: -${delay}s;
+            "></div>`;
+        }
+
+        const overlay = document.createElement('div');
+        overlay.id = 'transition-overlay';
+        overlay.className = 'loading-screen';
+        overlay.innerHTML = `
+            <!-- Random Stars -->
+            <div class="stars-container">${starsHTML}</div>
+            
+            <div class="loading-content">
+                <div class="loading-title">Warping...</div>
+                <div class="loading-bar-container">
+                    <div class="loading-bar-track">
+                        <div class="loading-bar-fill" id="transition-bar-fill"></div>
+                    </div>
+                    <div class="loading-mascot" id="transition-mascot">
+                        <div class="loading-mascot-body">
+                            <div class="loading-mascot-antenna">
+                                <div class="loading-antenna-ball"></div>
+                            </div>
+                            <div class="loading-mascot-head">
+                                <div class="loading-mascot-eye left"></div>
+                                <div class="loading-mascot-eye right"></div>
+                                <div class="loading-mascot-mouth"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="loading-message">Hold on tight!</div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    animateProgress(overlay) {
+        const barFill = overlay.querySelector('#transition-bar-fill');
+        const mascot = overlay.querySelector('#transition-mascot');
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            if (progress > 95) {
+                clearInterval(interval);
+                progress = 95;
+            }
+
+            if (barFill) barFill.style.width = `${progress}%`;
+            if (mascot) mascot.style.left = `calc(${progress}% - 20px)`;
+        }, 50);
     }
 
     checkArrival() {
@@ -64,67 +136,26 @@ class PageTransitionManager {
 
         if (isWarping) {
             console.log('✨ Arrived from warp!');
-
-            // Immediately show overlay (active) to cover loading
-            const overlay = this.getOverlay();
-            overlay.classList.add('active', 'arrival');
-
-            // Ensure mascot is in warp mode initially (so he doesn't jump)
-            if (window.mascotBuddy) {
-                // We need to wait for mascot to init, or force it if it's ready
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', () => this.finishArrival());
-                } else {
-                    this.finishArrival();
-                }
-            } else {
-                this.finishArrival();
-            }
-
+            // The loading-screen.js handles the arrival if we came from a warp
+            // Just clear the flag
             sessionStorage.removeItem('isWarping');
-        }
-    }
 
-    finishArrival() {
-        const overlay = this.getOverlay();
-
-        // 1. Force mascot to center (as if he just arrived)
-        // 1. Force mascot to center (as if he just arrived)
-        if (window.mascotBuddy) {
-            // Ensure element exists before calling exit
-            if (window.mascotBuddy.element) {
+            // Exit mascot from warp mode after page loads
+            if (window.mascotBuddy && window.mascotBuddy.element) {
                 window.mascotBuddy.exitWarpMode(true);
             } else {
-                // Retry in a moment if mascot scripts loaded but element not created
-                setTimeout(() => {
-                    if (window.mascotBuddy.element) window.mascotBuddy.exitWarpMode(true);
-                }, 50);
+                // Wait for mascot to initialize
+                const checkMascot = setInterval(() => {
+                    if (window.mascotBuddy && window.mascotBuddy.element) {
+                        window.mascotBuddy.exitWarpMode(true);
+                        clearInterval(checkMascot);
+                    }
+                }, 100);
+
+                // Clean up after 3 seconds if mascot never loads
+                setTimeout(() => clearInterval(checkMascot), 3000);
             }
         }
-
-        // 2. Fade out overlay
-        // Wait for the "slow down" animation (warpArrive) to play out a bit
-        setTimeout(() => {
-            overlay.classList.remove('active', 'arrival');
-            document.body.classList.remove('warping');
-        }, 1200); // Increased from 100ms to allow 1s animation to show
-    }
-
-    getOverlay() {
-        let overlay = document.getElementById('warp-overlay');
-        if (!overlay) {
-            overlay = document.createElement('div');
-            overlay.id = 'warp-overlay';
-            overlay.className = 'warp-overlay';
-            overlay.innerHTML = `
-                <div class="warp-stars"></div>
-                <div class="warp-stars-2"></div>
-                <div class="warp-stars-3"></div>
-                <div class="warp-flash"></div>
-            `;
-            document.body.appendChild(overlay);
-        }
-        return overlay;
     }
 }
 
