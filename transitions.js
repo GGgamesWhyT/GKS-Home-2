@@ -89,8 +89,17 @@ class PageTransitionManager {
         const overlay = this.getOverlay();
 
         // 1. Force mascot to center (as if he just arrived)
+        // 1. Force mascot to center (as if he just arrived)
         if (window.mascotBuddy) {
-            window.mascotBuddy.exitWarpMode(true); // true = immediate/from arrival
+            // Ensure element exists before calling exit
+            if (window.mascotBuddy.element) {
+                window.mascotBuddy.exitWarpMode(true);
+            } else {
+                // Retry in a moment if mascot scripts loaded but element not created
+                setTimeout(() => {
+                    if (window.mascotBuddy.element) window.mascotBuddy.exitWarpMode(true);
+                }, 50);
+            }
         }
 
         // 2. Fade out overlay

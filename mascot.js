@@ -86,6 +86,10 @@ class MascotBuddy {
         // If warping, apply the center class immediately
         if (sessionStorage.getItem('isWarping')) {
             this.element.classList.add('warp-mode', 'warp-center');
+            // Safety fallback: Force absolute styling in case CSS fails/delays
+            this.element.style.left = '20px';
+            this.element.style.top = '50%';
+            this.element.style.transform = 'translateY(-50%)';
             this.isWarping = true;
         } else {
             this.applyPosition();
@@ -355,32 +359,38 @@ class MascotBuddy {
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
 
-            // Set target to center (adjust for mascot size approx 80x100)
-            this.targetPosition.x = viewportWidth / 2 - 40;
+            // Set target to Left Side (user preference: "fly to left, arrive on left")
+            this.targetPosition.x = 20;
             this.targetPosition.y = viewportHeight / 2 - 50;
+        } else {
+            // NORMAL MODE LOGIC (Only run if NOT warping)
 
-            // We continue execution so the lerp/physics below actually moves him there!
-        }
+            // Check if any offline targets are visible on screen
+            const hasVisibleTargets = this.checkVisibleTargets();
 
-        // Check if any offline targets are visible on screen
-        // ONLY check this if NOT warping
-        const hasVisibleTargets = !this.isWarping && this.checkVisibleTargets();
-
-        // If patrolling but no targets visible, return to happy idle
-        if ((this.offlineServers.length > 0 || this.stoppedContainers > 0) && !hasVisibleTargets) {
-            // Targets scrolled off screen - go back to happy idle position
-            this.targetPosition = {
-                x: 20,
-                y: window.innerHeight / 2
-            };
-            if (this.mood === 'sad') {
-                this.setMood('happy');
-            }
-        } else if (this.offlineServers.length > 0 || this.stoppedContainers > 0) {
-            // Targets visible - patrol to them
-            this.updatePatrolTarget();
-            if (this.mood !== 'sad') {
-                this.setMood('sad');
+            // If patrolling but no targets visible, return to happy idle
+            if ((this.offlineServers.length > 0 || this.stoppedContainers > 0) && !hasVisibleTargets) {
+                // Targets scrolled off screen - go back to happy idle position
+                this.targetPosition = {
+                    x: 20,
+                    y: window.innerHeight / 2
+                };
+                if (this.mood === 'sad') {
+                    this.setMood('happy');
+                }
+            } else if (this.offlineServers.length > 0 || this.stoppedContainers > 0) {
+                // Targets visible - patrol to them
+                this.updatePatrolTarget();
+                if (this.mood !== 'sad') {
+                    this.setMood('sad');
+                }
+            } else {
+                // Happy companion mode (no offline servers)
+                // Always return to left side if nothing else to do
+                this.targetPosition = {
+                    x: 20,
+                    y: window.innerHeight / 2
+                };
             }
         }
 
@@ -641,6 +651,11 @@ class MascotBuddy {
     enterWarpMode() {
         this.isWarping = true;
         this.element.classList.add('warp-mode'); // Don't add warp-center yet, let him fly there!
+
+        // Remove any other animation classes immediately
+        this.element.classList.remove('anim-bounce', 'anim-spin', 'anim-flip', 'anim-wave');
+        this.isAnimating = false;
+
         this.setMood('surprised');
 
         // Stop patrol so logic doesn't interfere
@@ -652,6 +667,9 @@ class MascotBuddy {
 
         // Remove centering constraint
         this.element.classList.remove('warp-mode', 'warp-center');
+        // Clear manual safety styles
+        this.element.style.transform = '';
+
         this.setMood('happy');
 
         if (immediate) {
