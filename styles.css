@@ -5305,10 +5305,39 @@ body:has(.mascot-buddy) .servers-mascot {
 /* Responsive Loading Screen */
 @media (max-width: 480px) {
     .loading-title {
-        font-size: 2rem;
+        font-size: 1.75rem;
+        margin-bottom: 2rem;
     }
 
     .loading-content {
-        width: 85%;
+        width: 90%;
+        max-width: 320px;
+    }
+
+    .loading-bar-container {
+        padding: 1.5rem 0;
+    }
+
+    .loading-bar-track {
+        height: 10px;
+    }
+
+    .loading-mascot {
+        width: 35px;
+        height: 45px;
+        transform: scale(0.85);
+    }
+
+    .loading-message {
+        font-size: 0.85rem;
+    }
+
+    /* Reduce star count impact on mobile for performance */
+    .stars-container {
+        opacity: 0.7;
+    }
+
+    .random-star {
+        animation-duration: 4s !important;
     }
 }

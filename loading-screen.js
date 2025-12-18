@@ -31,8 +31,9 @@ class LoadingScreen {
     }
 
     createLoadingScreen() {
-        // Generate random stars
-        const starCount = 100;
+        // Generate random stars - fewer on mobile for performance
+        const isMobile = window.innerWidth <= 480;
+        const starCount = isMobile ? 40 : 100;
         let starsHTML = '';
         for (let i = 0; i < starCount; i++) {
             const x = Math.random() * 100;
