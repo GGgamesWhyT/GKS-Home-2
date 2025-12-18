@@ -64,9 +64,11 @@ class PyrodactylWidget {
             container.querySelectorAll('.gauge-ring').forEach(el => {
                 el.classList.remove('animated');
             });
-            // Disable card animations
+            // Disable card animations but ensure visibility
             container.querySelectorAll('.server-card').forEach(el => {
                 el.style.animation = 'none';
+                el.style.opacity = '1';
+                el.style.transform = 'none';
             });
         }
     }
