@@ -477,15 +477,8 @@ class Dashboard {
     setExternalLinks() {
         const links = {
             'proxmox-link': CONFIG.externalLinks.proxmox,
-            'jellyfin-link': CONFIG.externalLinks.jellyfin,
-            'jellyseerr-link': CONFIG.externalLinks.jellyseerr,
-            'jellyfin-header-link': CONFIG.externalLinks.jellyfin,
-            'jellyseerr-header-link': CONFIG.externalLinks.jellyseerr,
             'pyrodactyl-link': CONFIG.externalLinks.pyrodactyl,
             'portainer-link': CONFIG.externalLinks.portainer,
-            // Mobile nav links
-            'mobile-jellyfin-link': CONFIG.externalLinks.jellyfin,
-            'mobile-jellyseerr-link': CONFIG.externalLinks.jellyseerr,
         };
         Object.entries(links).forEach(([id, url]) => {
             const link = document.getElementById(id);
@@ -500,14 +493,6 @@ class Dashboard {
             this.widgets.set('proxmox', new ProxmoxWidget());
             await this.widgets.get('proxmox').load();
         }
-        if (typeof JellyfinWidget !== 'undefined') {
-            this.widgets.set('jellyfin', new JellyfinWidget());
-            await this.widgets.get('jellyfin').load();
-        }
-        if (typeof JellyseerrWidget !== 'undefined') {
-            this.widgets.set('jellyseerr', new JellyseerrWidget());
-            await this.widgets.get('jellyseerr').load();
-        }
         if (typeof PyrodactylWidget !== 'undefined') {
             this.widgets.set('pyrodactyl', new PyrodactylWidget());
             await this.widgets.get('pyrodactyl').load();
@@ -520,7 +505,7 @@ class Dashboard {
 
     // ===== Refresh Timers =====
     startRefreshTimers() {
-        ['proxmox', 'jellyfin', 'jellyseerr', 'pyrodactyl', 'portainer'].forEach(name => {
+        ['proxmox', 'pyrodactyl', 'portainer'].forEach(name => {
             const interval = CONFIG.refreshIntervals[name];
             if (!interval) return;
 
