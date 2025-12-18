@@ -198,8 +198,8 @@ class MascotBuddy {
         // Build list of all patrol targets
         const targets = [];
 
-        // Add offline server cards (on servers page)
-        const serverCards = document.querySelectorAll('.server-card-v2.offline, .server-showcase-card.offline, .server-card.offline, .pyrodactyl-server.offline');
+        // Add offline server cards (on servers page and index page)
+        const serverCards = document.querySelectorAll('.server-card-v2.offline, .server-showcase-card.offline, .server-card.offline, .pyrodactyl-server.offline, .mini-widget.offline');
         serverCards.forEach(card => targets.push(card));
 
         // Add stopped container cards (on containers page)
@@ -242,8 +242,8 @@ class MascotBuddy {
                 rect.left < viewportWidth && rect.right > 0;
         };
 
-        // Check for offline server cards on servers page
-        const offlineCards = document.querySelectorAll('.server-card-v2.offline, .server-showcase-card.offline');
+        // Check for offline server cards on servers page and index page
+        const offlineCards = document.querySelectorAll('.server-card-v2.offline, .server-showcase-card.offline, .mini-widget.offline');
         for (const card of offlineCards) {
             if (isInViewport(card)) return true;
         }

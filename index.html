@@ -8,6 +8,7 @@
     <meta name="description" content="Personal home dashboard with Proxmox, Jellyfin, and Jellyseerr integration">
     <link rel="icon" type="image/jpeg" href="favicon.jpg">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="index-page.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -57,14 +58,6 @@
                     </a>
                 </nav>
                 <div class="header-actions">
-                    <button id="edit-toggle" class="edit-toggle" aria-label="Edit dashboard layout"
-                        title="Edit Dashboard">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                        </svg>
-                    </button>
                     <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark/light mode"
                         title="Toggle Theme">
                         <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
@@ -130,36 +123,186 @@
         </div>
     </header>
 
-    <!-- Main Dashboard -->
+    <!-- Main Content -->
     <main class="main">
-        <div id="dashboard" class="dashboard-grid">
-            <!-- Greeting Widget -->
-            <div class="greeting-widget" id="greeting-widget">
-                <!-- Mascot Character -->
-                <div class="mascot" id="mascot">
-                    <div class="mascot-body">
-                        <div class="mascot-antenna">
-                            <div class="antenna-ball"></div>
-                        </div>
-                        <div class="mascot-head">
-                            <div class="mascot-eye left">
-                                <div class="mascot-pupil" id="pupil-left"></div>
-                            </div>
-                            <div class="mascot-eye right">
-                                <div class="mascot-pupil" id="pupil-right"></div>
-                            </div>
-                            <div class="mascot-mouth"></div>
-                        </div>
+        <!-- Hero Section -->
+        <section class="index-hero">
+            <div class="hero-content">
+
+                <div class="hero-text">
+                    <h1 class="hero-title">GKS Dashboard</h1>
+                    <p class="hero-subtitle">Monitor your infrastructure at a glance</p>
+                    <div class="hero-badges">
+                        <span id="greeting" class="greeting-badge"></span>
+                        <span id="current-time" class="time-badge"></span>
                     </div>
                 </div>
-                <div class="greeting-content">
-                    <span id="greeting" class="greeting-text"></span>
-                    <span id="current-time" class="current-time"></span>
-                </div>
+            </div>
+        </section>
+
+        <!-- Mini Widgets Section -->
+        <section class="mini-widgets-section">
+            <div class="section-header">
+                <h2>Quick Overview</h2>
+                <button id="widget-settings-btn" class="widget-settings-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                    Customize
+                </button>
             </div>
 
-        </div>
+            <div class="mini-widgets-grid" id="mini-widgets-grid">
+                <!-- Proxmox Widget -->
+                <a href="/proxmox" class="mini-widget proxmox-mini" data-widget="proxmox">
+                    <div class="mini-widget-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <div class="mini-widget-content">
+                        <h3>Proxmox Cluster</h3>
+                        <div class="mini-widget-stats">
+                            <div class="loading-placeholder">
+                                <div class="skeleton text"></div>
+                                <div class="skeleton text"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-widget-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- Containers Widget -->
+                <a href="/containers" class="mini-widget containers-mini" data-widget="containers">
+                    <div class="mini-widget-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12H2"></path>
+                            <path
+                                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z">
+                            </path>
+                            <line x1="6" y1="16" x2="6.01" y2="16"></line>
+                            <line x1="10" y1="16" x2="10.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <div class="mini-widget-content">
+                        <h3>Docker Containers</h3>
+                        <div class="mini-widget-stats">
+                            <div class="loading-placeholder">
+                                <div class="skeleton text"></div>
+                                <div class="skeleton text"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-widget-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                </a>
+
+                <!-- Servers Widget -->
+                <a href="/servers" class="mini-widget servers-mini" data-widget="servers">
+                    <div class="mini-widget-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+                            <line x1="12" y1="22" x2="12" y2="15.5"></line>
+                            <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+                        </svg>
+                    </div>
+                    <div class="mini-widget-content">
+                        <h3>Game Servers</h3>
+                        <div class="mini-widget-stats">
+                            <div class="loading-placeholder">
+                                <div class="skeleton text"></div>
+                                <div class="skeleton text"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mini-widget-arrow">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </section>
     </main>
+
+    <!-- Widget Settings Panel -->
+    <div class="widget-settings-overlay" id="widget-settings-overlay"></div>
+    <div class="widget-settings-panel" id="widget-settings-panel">
+        <button class="settings-close-btn" id="settings-close-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <h3>Dashboard Widgets</h3>
+        <div class="widget-toggle-list">
+            <div class="widget-toggle-item">
+                <div class="widget-toggle-info">
+                    <div class="widget-toggle-icon proxmox">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <span class="widget-toggle-label">Proxmox</span>
+                </div>
+                <div class="toggle-switch active" data-toggle="proxmox"></div>
+            </div>
+            <div class="widget-toggle-item">
+                <div class="widget-toggle-info">
+                    <div class="widget-toggle-icon containers">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 12H2"></path>
+                            <path
+                                d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z">
+                            </path>
+                            <line x1="6" y1="16" x2="6.01" y2="16"></line>
+                            <line x1="10" y1="16" x2="10.01" y2="16"></line>
+                        </svg>
+                    </div>
+                    <span class="widget-toggle-label">Containers</span>
+                </div>
+                <div class="toggle-switch active" data-toggle="containers"></div>
+            </div>
+            <div class="widget-toggle-item">
+                <div class="widget-toggle-info">
+                    <div class="widget-toggle-icon servers">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon>
+                            <line x1="12" y1="22" x2="12" y2="15.5"></line>
+                            <polyline points="22 8.5 12 15.5 2 8.5"></polyline>
+                        </svg>
+                    </div>
+                    <span class="widget-toggle-label">Game Servers</span>
+                </div>
+                <div class="toggle-switch active" data-toggle="servers"></div>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -169,7 +312,7 @@
     <!-- Scripts -->
     <script src="config.js"></script>
     <script src="mascot.js"></script>
-    <script src="app.js"></script>
+    <script src="index-page.js"></script>
 </body>
 
 </html>
