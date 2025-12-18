@@ -41,8 +41,11 @@ class MascotBuddy {
         this.idleTimer = null;
         this.particleTimer = null;
         this.patrolTimer = null;
+        this.wanderTimer = null;
         this.isAnimating = false;
         this.lastIdleAnimation = 0;
+        this.isWandering = false;
+        this.wanderTarget = null;
 
         // Elements (will be set in init)
         this.element = null;
@@ -55,6 +58,7 @@ class MascotBuddy {
         this.particleInterval = 150;
         this.idleAnimationInterval = 15000; // 15-30 seconds
         this.patrolSpeed = 10000; // Time to stay at each target (10 seconds)
+        this.wanderInterval = 8000; // Pick a new wander spot every 8-15 seconds
 
         // Bind methods
         this.update = this.update.bind(this);
@@ -115,6 +119,9 @@ class MascotBuddy {
 
         // Start particle system
         this.startParticleSystem();
+
+        // Start wander system for happy roaming
+        this.startWanderTimer();
 
         console.log('🤖 MascotBuddy initialized!');
     }
@@ -362,6 +369,230 @@ class MascotBuddy {
         this.patrolIndex = 0;
     }
 
+    // ===== WANDER SYSTEM (Happy Roaming) =====
+
+    /**
+     * Start the wander timer - periodically picks random locations when happy
+     */
+    startWanderTimer() {
+        if (this.wanderTimer) return;
+
+        const doWander = () => {
+            // Only wander when happy (not sad, not being dragged, not warping)
+            const canWander = this.mood !== 'sad' &&
+                this.mood !== 'worried' &&
+                !this.isBeingDragged &&
+                !this.isWarping &&
+                this.offlineServers.length === 0 &&
+                this.stoppedContainers === 0;
+
+            if (canWander) {
+                this.pickWanderTarget();
+            } else {
+                this.isWandering = false;
+                this.wanderTarget = null;
+            }
+
+            // Schedule next wander (8-15 seconds)
+            const nextInterval = this.wanderInterval + Math.random() * 7000;
+            this.wanderTimer = setTimeout(doWander, nextInterval);
+        };
+
+        // Initial delay before first wander (3-6 seconds)
+        setTimeout(doWander, 3000 + Math.random() * 3000);
+    }
+
+    /**
+     * Pick a random wander target position
+     */
+    pickWanderTarget() {
+        const margin = 80;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Generate random position - prefer the left third of screen but allow roaming
+        // 70% chance left side, 30% chance anywhere
+        let targetX, targetY;
+
+        if (Math.random() < 0.7) {
+            // Stay on left side (common case)
+            targetX = 20 + Math.random() * (viewportWidth * 0.15);
+        } else {
+            // Roam more freely (occasional)
+            targetX = margin + Math.random() * (viewportWidth * 0.4 - margin);
+        }
+
+        // Random Y position across the viewport
+        targetY = margin + Math.random() * (viewportHeight - margin * 2);
+
+        // Store wander target - text avoidance will adjust Y in update()
+        this.wanderTarget = { x: targetX, y: targetY };
+        this.isWandering = true;
+    }
+
+    /**
+     * Stop wandering (called when mood changes to sad)
+     */
+    stopWander() {
+        this.isWandering = false;
+        this.wanderTarget = null;
+    }
+
+    // ===== TEXT AVOIDANCE SYSTEM =====
+
+    /**
+     * Get bounding rectangles of all visible text elements the mascot should avoid
+     */
+    getTextElements() {
+        const textSelectors = [
+            // General headings
+            'h1', 'h2', 'h3', 'h4',
+            '.hero-title', '.hero-subtitle',
+            '.section-header h2',
+
+            // Widget elements
+            '.widget-header', '.widget-title',
+            '.mini-widget-content h3',
+
+            // Guide pages
+            '.guide-section h2',
+            '.guide-hero h1',
+
+            // Server cards (old style)
+            '.server-showcase-name',
+
+            // Server cards v2 (new style)
+            '.server-name-v2',
+            '.game-badge-v2',
+            '.status-text-v2',
+            '.connection-label-v2',
+            '.connection-address-v2',
+            '.gauge-label-v2',
+            '.uptime-text-v2',
+            '.server-header-v2',
+
+            // Container page
+            '.container-name',
+            '.container-status',
+
+            // Proxmox page
+            '.node-name', '.vm-name',
+
+            // Index page
+            '.greeting-badge', '.time-badge',
+
+            // Error states
+            '.servers-error-state h3',
+            '.servers-empty-state h3'
+        ];
+
+        const textRects = [];
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
+
+        textSelectors.forEach(selector => {
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+                // Skip hidden elements
+                const style = window.getComputedStyle(el);
+                if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
+                    return;
+                }
+
+                const rect = el.getBoundingClientRect();
+
+                // Skip elements outside viewport
+                if (rect.bottom < 0 || rect.top > viewportHeight ||
+                    rect.right < 0 || rect.left > viewportWidth) {
+                    return;
+                }
+
+                // Skip elements that are very small (probably empty)
+                if (rect.width < 10 || rect.height < 10) {
+                    return;
+                }
+
+                // Add some padding around text elements
+                textRects.push({
+                    top: rect.top - 10,
+                    bottom: rect.bottom + 10,
+                    left: rect.left - 20,
+                    right: rect.right + 20,
+                    height: rect.height + 20
+                });
+            });
+        });
+
+        return textRects;
+    }
+
+    /**
+     * Find a Y position that doesn't overlap any text elements
+     * @param {number} targetX - The X position the mascot wants to be at
+     * @param {number} preferredY - The preferred Y position
+     * @param {number} mascotHeight - Height of the mascot element (default 80)
+     * @returns {number} - Adjusted Y position that avoids text
+     */
+    findClearYPosition(targetX, preferredY, mascotHeight = 80) {
+        const textRects = this.getTextElements();
+        const mascotWidth = 60;
+        const margin = 60;
+        const viewportHeight = window.innerHeight;
+
+        // Build mascot bounding box at preferred position
+        const mascotRect = {
+            left: targetX,
+            right: targetX + mascotWidth,
+            top: preferredY - mascotHeight / 2,
+            bottom: preferredY + mascotHeight / 2
+        };
+
+        // Check if preferred position overlaps any text
+        const overlaps = (yPos) => {
+            const testRect = {
+                left: targetX,
+                right: targetX + mascotWidth,
+                top: yPos - mascotHeight / 2,
+                bottom: yPos + mascotHeight / 2
+            };
+
+            for (const text of textRects) {
+                // Check if rectangles overlap
+                if (testRect.right > text.left && testRect.left < text.right &&
+                    testRect.bottom > text.top && testRect.top < text.bottom) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        // If no overlap at preferred position, use it
+        if (!overlaps(preferredY)) {
+            return preferredY;
+        }
+
+        // Search for a clear position, alternating up and down
+        const searchStep = 30;
+        const maxSearch = viewportHeight / 2;
+
+        for (let offset = searchStep; offset < maxSearch; offset += searchStep) {
+            // Try below
+            const belowY = preferredY + offset;
+            if (belowY + mascotHeight / 2 < viewportHeight - margin && !overlaps(belowY)) {
+                return belowY;
+            }
+
+            // Try above
+            const aboveY = preferredY - offset;
+            if (aboveY - mascotHeight / 2 > margin && !overlaps(aboveY)) {
+                return aboveY;
+            }
+        }
+
+        // Fallback: return preferred position if no clear spot found
+        return preferredY;
+    }
+
     update() {
         if (this.isBeingDragged) return;
 
@@ -397,12 +628,25 @@ class MascotBuddy {
                 }
             } else {
                 // Happy companion mode (no offline servers)
-                // Always return to left side if nothing else to do
-                this.targetPosition = {
-                    x: 20,
-                    y: window.innerHeight / 2
-                };
+                // Use wander target if we have one, otherwise default to left side
+                if (this.isWandering && this.wanderTarget) {
+                    this.targetPosition = { ...this.wanderTarget };
+                } else {
+                    this.targetPosition = {
+                        x: 20,
+                        y: window.innerHeight / 2
+                    };
+                }
             }
+        }
+
+        // TEXT AVOIDANCE: Adjust Y position to avoid covering text
+        // Only apply when not being dragged and not in warp mode
+        if (!this.isWarping) {
+            this.targetPosition.y = this.findClearYPosition(
+                this.targetPosition.x,
+                this.targetPosition.y
+            );
         }
 
         // Clamp target position to viewport bounds (mascot should never go off screen)
