@@ -5,9 +5,26 @@
 
 class MascotBuddy {
     constructor() {
-        // Position state
-        this.position = { x: 20, y: window.innerHeight / 2 };
-        this.targetPosition = { x: 20, y: window.innerHeight / 2 };
+        // Initial position
+        // Check if we are arriving from a warp
+        const isWarping = sessionStorage.getItem('isWarping');
+        if (isWarping) {
+            // We'll let the CSS class handle the initial position in init()
+            // But we need a valid logical position so it doesn't jump when we exit warp
+            // User requested "Left Middle" for arrival
+            this.position = {
+                x: 20,
+                y: window.innerHeight / 2
+            };
+        } else {
+            // Default bottom right
+            this.position = {
+                x: window.innerWidth - 100,
+                y: window.innerHeight - 100
+            };
+        }
+
+        this.targetPosition = { ...this.position };
         this.velocity = { x: 0, y: 0 };
 
         // State
@@ -66,7 +83,13 @@ class MascotBuddy {
         this.restorePosition();
 
         // Apply initial position
-        this.applyPosition();
+        // If warping, apply the center class immediately
+        if (sessionStorage.getItem('isWarping')) {
+            this.element.classList.add('warp-mode', 'warp-center');
+            this.isWarping = true;
+        } else {
+            this.applyPosition();
+        }
 
         // Setup event listeners
         this.setupEventListeners();
@@ -327,8 +350,21 @@ class MascotBuddy {
     update() {
         if (this.isBeingDragged) return;
 
+        // In warp mode, we override everything to center on screen
+        if (this.isWarping) {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            // Set target to center (adjust for mascot size approx 80x100)
+            this.targetPosition.x = viewportWidth / 2 - 40;
+            this.targetPosition.y = viewportHeight / 2 - 50;
+
+            // We continue execution so the lerp/physics below actually moves him there!
+        }
+
         // Check if any offline targets are visible on screen
-        const hasVisibleTargets = this.checkVisibleTargets();
+        // ONLY check this if NOT warping
+        const hasVisibleTargets = !this.isWarping && this.checkVisibleTargets();
 
         // If patrolling but no targets visible, return to happy idle
         if ((this.offlineServers.length > 0 || this.stoppedContainers > 0) && !hasVisibleTargets) {
@@ -354,7 +390,8 @@ class MascotBuddy {
         this.targetPosition.y = Math.max(margin, Math.min(this.targetPosition.y, window.innerHeight - margin));
 
         // Smooth floating movement using lerp (no rubber-banding)
-        const lerpSpeed = 0.015; // Slower, gentler float for small buddy
+        // Move faster if in warp mode, but smooth enough to see (not instant)
+        const lerpSpeed = this.isWarping ? 0.05 : 0.015;
 
         const dx = this.targetPosition.x - this.position.x;
         const dy = this.targetPosition.y - this.position.y;
@@ -597,6 +634,36 @@ class MascotBuddy {
         else if ((month === 12 && day === 31) || (month === 1 && day <= 2)) {
             this.element.classList.add('newyear');
         }
+    }
+
+    // ===== WARP MODE =====
+
+    enterWarpMode() {
+        this.isWarping = true;
+        this.element.classList.add('warp-mode'); // Don't add warp-center yet, let him fly there!
+        this.setMood('surprised');
+
+        // Stop patrol so logic doesn't interfere
+        this.stopPatrol();
+    }
+
+    exitWarpMode(immediate = false) {
+        this.isWarping = false;
+
+        // Remove centering constraint
+        this.element.classList.remove('warp-mode', 'warp-center');
+        this.setMood('happy');
+
+        if (immediate) {
+            // Force JS position to match the "Left Middle" where he arrives
+            // so there is no jump when the class is removed
+            this.position.x = 20;
+            this.position.y = window.innerHeight / 2 - (this.element.offsetHeight / 2);
+            this.applyPosition();
+        }
+
+        // Return to normal positioning (companion follow)
+        this.updateTargetPosition();
     }
 
     // ===== ANIMATIONS =====

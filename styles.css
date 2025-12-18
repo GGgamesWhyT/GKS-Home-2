@@ -4722,3 +4722,205 @@ body:has(.mascot-buddy) .servers-mascot {
         font-size: 14px;
     }
 }
+
+/* ===== Warp Speed Transition ===== */
+.warp-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9998;
+    /* Below mascot (9999) but above everything else */
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    overflow: hidden;
+    perspective: 1000px;
+}
+
+.warp-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+    background: #050510;
+    /* Deep space background */
+}
+
+.warp-stars,
+.warp-stars-2,
+.warp-stars-3 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 2px;
+    background: transparent;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    will-change: transform, opacity;
+}
+
+/* Layer 1: Distant stars (Small, dense, slow) */
+.warp-stars {
+    width: 200vmax;
+    height: 200vmax;
+    background-image:
+        radial-gradient(white 1px, transparent 1.5px),
+        radial-gradient(white 1px, transparent 1.5px);
+    background-size: 80px 80px, 130px 130px;
+    background-position: 0 0, 40px 60px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.1);
+}
+
+/* Layer 2: Mid stars (Medium, medium speed) */
+.warp-stars-2 {
+    width: 200vmax;
+    height: 200vmax;
+    background-image:
+        radial-gradient(white 1.5px, transparent 2px),
+        radial-gradient(rgba(137, 207, 240, 0.8) 1.5px, transparent 2px);
+    background-size: 250px 250px, 180px 180px;
+    background-position: 20px 20px, 100px 100px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.1) rotate(45deg);
+}
+
+/* Layer 3: Close asteroids/streaks (Larger, fast) */
+.warp-stars-3 {
+    width: 200vmax;
+    height: 200vmax;
+    background-image:
+        radial-gradient(white 2px, transparent 2.5px);
+    background-size: 400px 400px;
+    background-position: 50px 50px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.1) rotate(-30deg);
+}
+
+/* Animation State: Warping */
+.warp-overlay.active .warp-stars {
+    animation: warpZoom 1s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+
+.warp-overlay.active .warp-stars-2 {
+    animation: warpZoom 1s cubic-bezier(0.7, 0, 0.3, 1) 0.05s forwards;
+    /* Slightly faster feel due to delay/scale diff? No, just delay */
+}
+
+.warp-overlay.active .warp-stars-3 {
+    animation: warpZoom 1s cubic-bezier(0.7, 0, 0.3, 1) 0.1s forwards;
+}
+
+/* Animation State: Arrival */
+.warp-overlay.active.arrival .warp-stars {
+    animation: warpArrive 1.5s ease-out forwards;
+}
+
+.warp-overlay.active.arrival .warp-stars-2 {
+    animation: warpArrive 1.5s ease-out 0.05s forwards;
+}
+
+.warp-overlay.active.arrival .warp-stars-3 {
+    animation: warpArrive 1.5s ease-out 0.1s forwards;
+}
+
+/* Flash effect */
+.warp-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    opacity: 0;
+    mix-blend-mode: overlay;
+}
+
+.warp-overlay.active .warp-flash {
+    animation: flash 0.8s ease-in forwards;
+}
+
+@keyframes warpZoom {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.1);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(4);
+    }
+}
+
+@keyframes warpArrive {
+    0% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(4);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(6);
+    }
+}
+
+@keyframes flash {
+    0% {
+        opacity: 0;
+    }
+
+    80% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Mascot adjustments during warp */
+.mascot-buddy.warp-mode {
+    z-index: 9999;
+}
+
+/* Force specific positioning when warping/arriving */
+.mascot-buddy.warp-center {
+    top: 50% !important;
+    left: 20px !important;
+    transform: translateY(-50%) !important;
+    transition: none !important;
+    /* Ensure no fighting with JS */
+}
+
+/* Add a "speed lines" effect to the mascot using a pseudo-element */
+.mascot-buddy.warp-mode::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    opacity: 0;
+    animation: engineGlow 0.5s ease-in alternate infinite;
+    z-index: -1;
+}
+
+@keyframes engineGlow {
+    from {
+        opacity: 0.5;
+        transform: translate(-50%, -50%) scale(1);
+    }
+
+    to {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}

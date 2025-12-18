@@ -322,14 +322,14 @@ class ServersPage {
             actionButtons = '<div class="server-actions-v2">';
             if (gameType.modpackUrl) {
                 actionButtons += `
-                    <a href="${gameType.modpackUrl}" class="action-btn-v2 modpack" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+                    <a href="${gameType.modpackUrl}" class="action-btn-v2 modpack" target="_blank" rel="noopener">
                         ${this.getDownloadIcon()}
                         <span>${gameType.modpackLabel || 'Modpack'}</span>
                     </a>`;
             }
             if (gameType.guideUrl) {
                 actionButtons += `
-                    <a href="${gameType.guideUrl}" class="action-btn-v2 guide" onclick="event.stopPropagation()">
+                    <a href="${gameType.guideUrl}" class="action-btn-v2 guide">
                         ${this.getBookIcon()}
                         <span>Setup Guide</span>
                     </a>`;
