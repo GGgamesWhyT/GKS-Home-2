@@ -11,15 +11,16 @@
     --text-secondary: #a0a0a5;
     --text-muted: #6b6b70;
 
-    --accent-primary: #00d4aa;
-    --accent-secondary: #00b894;
-    --accent-glow: rgba(0, 212, 170, 0.3);
+    /* Space Theme Blues */
+    --accent-primary: #667eea;
+    --accent-secondary: #5a67d8;
+    --accent-glow: rgba(102, 126, 234, 0.3);
 
     --border-color: rgba(255, 255, 255, 0.08);
-    --border-glow: rgba(0, 212, 170, 0.5);
+    --border-glow: rgba(102, 126, 234, 0.5);
 
     /* Status Colors */
-    --status-online: #00d4aa;
+    --status-online: #48bb78;
     --status-offline: #ff6b6b;
     --status-warning: #ffd93d;
     --status-pending: #6c5ce7;
@@ -107,8 +108,8 @@ body::before {
     width: 200%;
     height: 200%;
     background:
-        radial-gradient(ellipse at 30% 30%, rgba(0, 212, 170, 0.08) 0%, transparent 40%),
-        radial-gradient(ellipse at 70% 70%, rgba(0, 184, 148, 0.06) 0%, transparent 40%),
+        radial-gradient(ellipse at 30% 30%, rgba(102, 126, 234, 0.08) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 70%, rgba(139, 92, 246, 0.06) 0%, transparent 40%),
         radial-gradient(ellipse at 50% 50%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
@@ -302,7 +303,7 @@ body::before {
 
 .greeting-widget:hover {
     border-color: var(--accent-primary);
-    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
 }
 
 /* Sticky mode - transforms into sleek header bar below main header */
@@ -484,7 +485,7 @@ body::before {
     align-items: center;
     gap: 10px;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 212, 170, 0.2), inset 0 2px 10px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2), inset 0 2px 10px rgba(255, 255, 255, 0.05);
 }
 
 .mascot-eye {
@@ -853,14 +854,14 @@ body::before {
 
 /* Game Servers button - teal theme */
 .servers-btn {
-    color: #00d4aa;
-    border-color: rgba(0, 212, 170, 0.3);
+    color: #667eea;
+    border-color: rgba(102, 126, 234, 0.3);
 }
 
 .servers-btn:hover {
-    background: rgba(0, 212, 170, 0.1);
-    border-color: #00d4aa;
-    box-shadow: 0 0 15px rgba(0, 212, 170, 0.3);
+    background: rgba(102, 126, 234, 0.1);
+    border-color: #667eea;
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
 }
 
 /* Containers button - blue theme */
@@ -1208,7 +1209,7 @@ body::before {
 
 .widget:hover {
     border-color: var(--accent-primary);
-    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
     transform: translateY(-3px);
 }
 
@@ -1290,7 +1291,7 @@ body::before {
 
 .widget-link:hover {
     color: var(--accent-primary);
-    background: rgba(0, 212, 170, 0.1);
+    background: rgba(102, 126, 234, 0.1);
 }
 
 .widget-content {
@@ -1321,7 +1322,7 @@ body::before {
 }
 
 .node-card {
-    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(0, 212, 170, 0.03) 100%);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(102, 126, 234, 0.03) 100%);
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     border: 1px solid var(--border-color);
@@ -1333,7 +1334,7 @@ body::before {
 .node-card:hover {
     border-color: var(--accent-primary);
     transform: translateY(-3px);
-    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
 }
 
 .node-header {
@@ -1586,7 +1587,7 @@ body::before {
 }
 
 .server-card {
-    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(0, 212, 170, 0.03) 100%);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(102, 126, 234, 0.03) 100%);
     border-radius: var(--radius-lg);
     padding: var(--spacing-lg);
     border: 1px solid var(--border-color);
@@ -1645,7 +1646,7 @@ body::before {
 .server-card:hover {
     border-color: var(--accent-primary);
     transform: translateY(-3px);
-    box-shadow: 0 8px 32px rgba(0, 212, 170, 0.15);
+    box-shadow: 0 8px 32px rgba(102, 126, 234, 0.15);
 }
 
 .server-card.offline {
@@ -1709,7 +1710,7 @@ body::before {
 
 .status-badge.online {
     color: var(--status-online);
-    border-color: rgba(0, 212, 170, 0.3);
+    border-color: rgba(102, 126, 234, 0.3);
 }
 
 .status-badge.offline {
@@ -1827,7 +1828,7 @@ body::before {
     border-color: rgba(255, 255, 255, 0.2);
     box-shadow:
         0 20px 50px rgba(0, 0, 0, 0.3),
-        0 0 40px rgba(var(--accent-rgb, 0, 212, 170), 0.15),
+        0 0 40px rgba(var(--accent-rgb, 102, 126, 234), 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
@@ -2026,8 +2027,8 @@ body::before {
 
 .connection-box-v2:hover {
     border-color: var(--accent-primary);
-    background: rgba(0, 212, 170, 0.08);
-    box-shadow: 0 0 20px rgba(0, 212, 170, 0.1);
+    background: rgba(102, 126, 234, 0.08);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.1);
 }
 
 .connection-label-v2 {
@@ -2058,8 +2059,8 @@ body::before {
 }
 
 .copy-btn-v2 {
-    background: rgba(0, 212, 170, 0.15);
-    border: 1px solid rgba(0, 212, 170, 0.3);
+    background: rgba(102, 126, 234, 0.15);
+    border: 1px solid rgba(102, 126, 234, 0.3);
     border-radius: var(--radius-sm);
     padding: var(--spacing-xs) var(--spacing-sm);
     cursor: pointer;
@@ -2072,10 +2073,10 @@ body::before {
 }
 
 .copy-btn-v2:hover {
-    background: rgba(0, 212, 170, 0.25);
+    background: rgba(102, 126, 234, 0.25);
     border-color: var(--accent-primary);
     transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(0, 212, 170, 0.2);
+    box-shadow: 0 0 15px rgba(102, 126, 234, 0.2);
 }
 
 .copy-btn-v2.copied {
@@ -2163,7 +2164,7 @@ body::before {
 
 .gauge-bar-v2:hover {
     transform: scaleY(1.5);
-    box-shadow: 0 0 12px rgba(var(--gauge-color-rgb, 0, 212, 170), 0.3);
+    box-shadow: 0 0 12px rgba(var(--gauge-color-rgb, 102, 126, 234), 0.3);
 }
 
 .gauge-detail-v2 {
@@ -2333,7 +2334,7 @@ body::before {
 [data-theme="light"] .server-card-v2:hover {
     box-shadow:
         0 16px 48px rgba(0, 0, 0, 0.15),
-        0 0 30px rgba(0, 212, 170, 0.1),
+        0 0 30px rgba(102, 126, 234, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
@@ -2390,7 +2391,7 @@ body::before {
     border-color: rgba(255, 255, 255, 0.15);
     box-shadow:
         0 12px 48px rgba(0, 0, 0, 0.25),
-        0 0 40px rgba(0, 212, 170, 0.1),
+        0 0 40px rgba(102, 126, 234, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
@@ -2407,7 +2408,7 @@ body::before {
 [data-theme="light"] #pyrodactyl-widget:hover {
     box-shadow:
         0 12px 48px rgba(0, 0, 0, 0.12),
-        0 0 40px rgba(0, 212, 170, 0.08),
+        0 0 40px rgba(102, 126, 234, 0.08),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
@@ -2679,7 +2680,7 @@ body::before {
 }
 
 .media-card:hover .media-poster {
-    box-shadow: 0 8px 20px rgba(0, 212, 170, 0.25);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
 }
 
 .media-poster {
@@ -2783,7 +2784,7 @@ body::before {
     background: var(--bg-card-hover);
     transform: translateX(5px);
     border-color: var(--accent-primary);
-    box-shadow: 0 4px 12px rgba(0, 212, 170, 0.1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
 }
 
 .request-poster {
@@ -2831,7 +2832,7 @@ body::before {
 }
 
 .request-status.approved {
-    background: rgba(0, 212, 170, 0.2);
+    background: rgba(102, 126, 234, 0.2);
     color: var(--status-online);
 }
 
@@ -2954,7 +2955,7 @@ body::before {
 }
 
 .retry-btn:hover {
-    background: rgba(0, 212, 170, 0.1);
+    background: rgba(102, 126, 234, 0.1);
 }
 
 /* ===== Empty State ===== */
@@ -3555,7 +3556,7 @@ body.edit-mode .widget.dragging {
     }
 
     .media-card:active .media-poster {
-        box-shadow: 0 8px 20px rgba(0, 212, 170, 0.25);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.25);
     }
 }
 
@@ -3566,7 +3567,7 @@ body.edit-mode .widget.dragging {
 
 /* Hero Section */
 .servers-hero {
-    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(0, 212, 170, 0.1) 100%);
+    background: linear-gradient(135deg, var(--bg-tertiary) 0%, rgba(102, 126, 234, 0.1) 100%);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     padding: var(--spacing-2xl) var(--spacing-xl);
@@ -3585,7 +3586,7 @@ body.edit-mode .widget.dragging {
     right: 0;
     bottom: 0;
     background:
-        radial-gradient(ellipse at 20% 30%, rgba(0, 212, 170, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 20% 30%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
         radial-gradient(ellipse at 80% 70%, rgba(102, 126, 234, 0.1) 0%, transparent 50%);
     pointer-events: none;
 }
@@ -3633,7 +3634,7 @@ body.edit-mode .widget.dragging {
 .server-showcase-card:hover {
     border-color: var(--accent-primary);
     transform: translateY(-8px);
-    box-shadow: 0 20px 50px rgba(0, 212, 170, 0.2);
+    box-shadow: 0 20px 50px rgba(102, 126, 234, 0.2);
 }
 
 .server-showcase-card.offline {
@@ -3755,7 +3756,7 @@ body.edit-mode .widget.dragging {
 
 .connection-address-large:hover {
     border-color: var(--accent-primary);
-    background: rgba(0, 212, 170, 0.05);
+    background: rgba(102, 126, 234, 0.05);
 }
 
 .connection-address-large svg {
@@ -3899,7 +3900,7 @@ body.edit-mode .widget.dragging {
 .home-btn:hover {
     color: var(--accent-primary);
     border-color: var(--accent-primary);
-    background: rgba(0, 212, 170, 0.1);
+    background: rgba(102, 126, 234, 0.1);
 }
 
 .servers-btn {
@@ -4145,77 +4146,139 @@ body.edit-mode .widget.dragging {
     align-items: center;
 }
 
-.mascot-buddy .mascot-antenna {
-    width: 3px;
+/* Santa Hat */
+.mascot-buddy .santa-hat {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-15deg);
+    z-index: 10;
+}
+
+.mascot-buddy .santa-hat-base {
+    width: 35px;
+    height: 18px;
+    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+    border-radius: 0 30px 0 0;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.mascot-buddy .santa-hat-base::before {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: -3px;
+    right: -3px;
+    height: 8px;
+    background: linear-gradient(180deg, #fff 0%, #e0e0e0 100%);
+    border-radius: 4px;
+}
+
+.mascot-buddy .santa-hat-tip {
+    position: absolute;
+    top: -8px;
+    right: -5px;
+    width: 12px;
     height: 12px;
-    background: linear-gradient(to top, var(--accent-primary), var(--accent-secondary));
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+/* Candy Cane Antenna */
+.mascot-buddy .mascot-antenna {
+    width: 4px;
+    height: 15px;
+    background: repeating-linear-gradient(0deg,
+            #d32f2f 0px,
+            #d32f2f 3px,
+            white 3px,
+            white 6px);
     border-radius: 3px;
     position: relative;
     animation: antennaBob 2s ease-in-out infinite;
     transform-origin: bottom center;
+    box-shadow: 0 0 5px rgba(211, 47, 47, 0.3);
 }
 
 .mascot-buddy .antenna-ball {
     position: absolute;
-    top: -8px;
+    top: -10px;
     left: 50%;
     transform: translateX(-50%);
-    width: 10px;
-    height: 10px;
-    background: var(--accent-primary);
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle at 30% 30%, #ffeb3b, #ffc107);
     border-radius: 50%;
-    box-shadow: 0 0 15px var(--accent-primary), 0 0 30px var(--accent-primary);
-    animation: antennaPulse 1.5s ease-in-out infinite;
+    box-shadow: 0 0 15px #ffc107, 0 0 30px #ffc107, 0 0 45px rgba(255, 193, 7, 0.5);
+    animation: starPulse 1.5s ease-in-out infinite;
 }
 
+/* Star shape on antenna */
+.mascot-buddy .antenna-ball::before {
+    content: '★';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8px;
+    color: #fff;
+    text-shadow: 0 0 5px #fff;
+}
+
+@keyframes starPulse {
+
+    0%,
+    100% {
+        transform: translateX(-50%) scale(1);
+        box-shadow: 0 0 15px #ffc107, 0 0 30px #ffc107;
+    }
+
+    50% {
+        transform: translateX(-50%) scale(1.2);
+        box-shadow: 0 0 25px #ffc107, 0 0 50px #ffc107, 0 0 75px rgba(255, 193, 7, 0.3);
+    }
+}
+
+/* Astronaut Helmet Head */
 .mascot-buddy .mascot-head {
-    width: 50px;
-    height: 40px;
-    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-card) 100%);
-    border: 2px solid var(--accent-primary);
-    border-radius: 12px;
+    width: 55px;
+    height: 45px;
+    background: linear-gradient(180deg, #2a2a3e 0%, #1a1a2e 50%, #0f0f1a 100%);
+    border: 3px solid #4a4a5e;
+    border-radius: 14px;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 10px;
     position: relative;
-    box-shadow: 0 4px 20px rgba(0, 212, 170, 0.2), inset 0 2px 10px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .mascot-buddy .mascot-eye {
     width: 14px;
     height: 14px;
-    background: var(--bg-primary);
+    background: var(--accent-primary);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 8px var(--accent-primary), 0 0 15px rgba(102, 126, 234, 0.4);
     position: relative;
     animation: mascotBlink 4s ease-in-out infinite;
 }
 
+/* Simple glowing pupil */
 .mascot-buddy .mascot-pupil {
-    width: 8px;
-    height: 8px;
-    background: var(--accent-primary);
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.7);
     border-radius: 50%;
     transition: transform 0.1s ease-out;
-    box-shadow: 0 0 8px var(--accent-primary);
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.5);
     position: relative;
-}
-
-.mascot-buddy .mascot-pupil::after {
-    content: '';
-    position: absolute;
-    top: 1px;
-    left: 2px;
-    width: 3px;
-    height: 3px;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
 }
 
 .mascot-buddy .mascot-eyelid {
@@ -4240,6 +4303,56 @@ body.edit-mode .widget.dragging {
     transition: all 0.3s ease;
 }
 
+/* Rocket Thrusters */
+.mascot-buddy .mascot-thrusters {
+    display: flex;
+    gap: 20px;
+    margin-top: 2px;
+}
+
+.mascot-buddy .thruster {
+    width: 6px;
+    height: 10px;
+    background: linear-gradient(180deg, #4a4a5e 0%, #2a2a3e 100%);
+    border-radius: 0 0 3px 3px;
+    position: relative;
+}
+
+/* Thruster flame - visible during warp */
+.mascot-buddy .thruster::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 0;
+    background: linear-gradient(180deg, #ffc107 0%, #ff5722 50%, transparent 100%);
+    border-radius: 50%;
+    transition: height 0.3s ease;
+    box-shadow: 0 0 8px #ff5722;
+}
+
+/* Full thruster effect during warp mode */
+.mascot-buddy.warp-mode .thruster::after {
+    height: 15px;
+    animation: thrusterFlicker 0.1s ease-in-out infinite;
+}
+
+@keyframes thrusterFlicker {
+
+    0%,
+    100% {
+        height: 15px;
+        opacity: 1;
+    }
+
+    50% {
+        height: 12px;
+        opacity: 0.8;
+    }
+}
+
 /* ===== MASCOT EXPRESSIONS ===== */
 
 /* Happy - default and on hover */
@@ -4255,8 +4368,6 @@ body.edit-mode .widget.dragging {
 }
 
 .mascot-buddy.sad .antenna-ball {
-    background: var(--status-offline);
-    box-shadow: 0 0 10px var(--status-offline);
     animation: sadPulse 2s ease-in-out infinite;
 }
 
@@ -4264,7 +4375,6 @@ body.edit-mode .widget.dragging {
     width: 10px;
     height: 6px;
     border-radius: 6px 6px 0 0;
-    background: var(--status-offline);
     bottom: 8px;
 }
 
@@ -4273,13 +4383,8 @@ body.edit-mode .widget.dragging {
 }
 
 .mascot-buddy.sad .mascot-pupil {
-    background: var(--text-muted);
-    box-shadow: none;
     transform: translateY(2px) !important;
-}
-
-.mascot-buddy.sad .mascot-head {
-    border-color: var(--status-offline);
+    animation: none;
 }
 
 /* Surprised - when being dragged */
@@ -4991,7 +5096,7 @@ body:has(.mascot-buddy) .servers-mascot {
 .loading-title {
     font-size: 2.5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #00d4aa, #00a8cc, #667eea);
+    background: linear-gradient(135deg, #667eea, #5a67d8, #667eea);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -5028,16 +5133,16 @@ body:has(.mascot-buddy) .servers-mascot {
     overflow: hidden;
     box-shadow:
         inset 0 2px 4px rgba(0, 0, 0, 0.3),
-        0 0 20px rgba(0, 212, 170, 0.1);
+        0 0 20px rgba(102, 126, 234, 0.1);
 }
 
 .loading-bar-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #00d4aa, #00a8cc, #667eea);
+    background: linear-gradient(90deg, #667eea, #5a67d8, #667eea);
     border-radius: 6px;
     transition: width 0.3s ease-out;
-    box-shadow: 0 0 20px rgba(0, 212, 170, 0.5);
+    box-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
 }
 
 /* Loading Mascot - Mini version */
@@ -5071,38 +5176,53 @@ body:has(.mascot-buddy) .servers-mascot {
 
 .loading-mascot-antenna {
     position: absolute;
-    top: 0;
+    top: -2px;
     left: 50%;
     transform: translateX(-50%);
-    width: 2px;
-    height: 8px;
-    background: #00d4aa;
+    width: 3px;
+    height: 10px;
+    background: repeating-linear-gradient(0deg,
+            #d32f2f 0px,
+            #d32f2f 2px,
+            white 2px,
+            white 4px);
+    border-radius: 2px;
 }
 
 .loading-antenna-ball {
     position: absolute;
-    top: -4px;
+    top: -6px;
     left: 50%;
     transform: translateX(-50%);
-    width: 6px;
-    height: 6px;
-    background: #00d4aa;
+    width: 8px;
+    height: 8px;
+    background: radial-gradient(circle at 30% 30%, #ffeb3b, #ffc107);
     border-radius: 50%;
-    animation: antennaPulse 1s ease-in-out infinite;
-    box-shadow: 0 0 8px #00d4aa;
+    animation: miniStarPulse 1s ease-in-out infinite;
+    box-shadow: 0 0 8px #ffc107, 0 0 15px #ffc107;
 }
 
-@keyframes antennaPulse {
+.loading-antenna-ball::before {
+    content: '★';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5px;
+    color: #fff;
+}
+
+@keyframes miniStarPulse {
 
     0%,
     100% {
-        opacity: 1;
-        box-shadow: 0 0 8px #00d4aa;
+        transform: translateX(-50%) scale(1);
+        box-shadow: 0 0 8px #ffc107;
     }
 
     50% {
-        opacity: 0.6;
-        box-shadow: 0 0 15px #00d4aa;
+        transform: translateX(-50%) scale(1.15);
+        box-shadow: 0 0 15px #ffc107;
     }
 }
 
@@ -5115,10 +5235,22 @@ body:has(.mascot-buddy) .servers-mascot {
     height: 28px;
     background: linear-gradient(180deg, #2a2a3e 0%, #1a1a2e 100%);
     border-radius: 8px 8px 10px 10px;
-    border: 2px solid rgba(0, 212, 170, 0.3);
+    border: 2px solid #4a4a5e;
     box-shadow:
         0 4px 15px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Mini mascot visor reflection */
+.loading-mascot-head::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+    border-radius: 6px 6px 0 0;
 }
 
 .loading-mascot-eye {
@@ -5126,9 +5258,21 @@ body:has(.mascot-buddy) .servers-mascot {
     top: 8px;
     width: 8px;
     height: 8px;
-    background: radial-gradient(circle, #00d4aa 40%, #00a8cc 100%);
+    background: var(--accent-primary);
     border-radius: 50%;
-    box-shadow: 0 0 6px rgba(0, 212, 170, 0.8);
+    box-shadow: 0 0 4px var(--accent-primary);
+}
+
+/* Simple white pupil */
+.loading-mascot-eye::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 3px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
 }
 
 .loading-mascot-eye.left {
@@ -5146,7 +5290,7 @@ body:has(.mascot-buddy) .servers-mascot {
     transform: translateX(-50%);
     width: 10px;
     height: 4px;
-    background: #00d4aa;
+    background: #667eea;
     border-radius: 0 0 5px 5px;
 }
 

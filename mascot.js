@@ -128,6 +128,12 @@ class MascotBuddy {
                 <div class="mascot-particles" id="mascot-particles"></div>
                 <div class="mascot-outfit" id="mascot-outfit"></div>
                 <div class="mascot-body">
+                    <!-- Santa Hat -->
+                    <div class="santa-hat">
+                        <div class="santa-hat-base">
+                            <div class="santa-hat-tip"></div>
+                        </div>
+                    </div>
                     <div class="mascot-antenna">
                         <div class="antenna-ball"></div>
                     </div>
@@ -142,6 +148,11 @@ class MascotBuddy {
                         </div>
                         <div class="mascot-sunglasses" id="mascot-sunglasses"></div>
                         <div class="mascot-mouth"></div>
+                    </div>
+                    <!-- Rocket Thrusters -->
+                    <div class="mascot-thrusters">
+                        <div class="thruster left"></div>
+                        <div class="thruster right"></div>
                     </div>
                 </div>
                 <div class="mascot-tool" id="mascot-tool">
