@@ -21,7 +21,7 @@ LABEL description="Home dashboard with Proxmox, Jellyfin, and Jellyseerr integra
 WORKDIR /app
 
 # Copy frontend files
-COPY index.html servers.html styles.css app.js config.js servers.js ./
+COPY index.html servers.html styles.css app.js config.js servers.js mascot.js favicon.jpg ./
 COPY widgets/ ./widgets/
 COPY guides/ ./guides/
 COPY Logo\'s/ ./Logo\'s/
