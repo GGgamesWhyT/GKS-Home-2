@@ -537,6 +537,11 @@ app.get('/api/portainer/containers', async (req, res) => {
     }
 });
 
+// ===== Proxmox Page Route =====
+app.get('/proxmox', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'proxmox.html'));
+});
+
 // ===== Servers Page Route =====
 app.get('/servers', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'servers.html'));

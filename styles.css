@@ -839,6 +839,30 @@ body::before {
     box-shadow: 0 0 15px rgba(234, 179, 8, 0.3);
 }
 
+/* Proxmox button - orange theme */
+.proxmox-btn {
+    color: #e67e22;
+    border-color: rgba(230, 126, 34, 0.3);
+}
+
+.proxmox-btn:hover {
+    background: rgba(230, 126, 34, 0.1);
+    border-color: #e67e22;
+    box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
+}
+
+/* Game Servers button - teal theme */
+.servers-btn {
+    color: #00d4aa;
+    border-color: rgba(0, 212, 170, 0.3);
+}
+
+.servers-btn:hover {
+    background: rgba(0, 212, 170, 0.1);
+    border-color: #00d4aa;
+    box-shadow: 0 0 15px rgba(0, 212, 170, 0.3);
+}
+
 .nav-link {
     color: var(--text-secondary);
     text-decoration: none;

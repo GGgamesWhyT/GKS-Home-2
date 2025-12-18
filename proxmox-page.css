@@ -1,0 +1,554 @@
+/**
+ * GKS Proxmox Page Styles
+ * Separate CSS file for proxmox.html - v2 glassmorphism cards with circular gauges
+ */
+
+/* ===== PAGE LAYOUT ===== */
+
+.proxmox-page {
+    min-height: 100vh;
+    padding: var(--spacing-lg);
+}
+
+.proxmox-section {
+    display: block;
+    width: 100%;
+    max-width: none;
+}
+
+.proxmox-grid-container {
+    display: block;
+    width: 100%;
+}
+
+/* ===== HERO SECTION ===== */
+
+.proxmox-hero {
+    text-align: center;
+    padding: var(--spacing-2xl) 0;
+    position: relative;
+}
+
+.proxmox-hero .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.proxmox-hero .hero-icon {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.2) 0%, rgba(230, 126, 34, 0.05) 100%);
+    border-radius: 24px;
+    border: 1px solid rgba(230, 126, 34, 0.3);
+    color: #e67e22;
+    margin-bottom: var(--spacing-sm);
+}
+
+.proxmox-hero .hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+}
+
+.proxmox-hero .hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    max-width: 500px;
+    margin: 0;
+}
+
+/* ===== NODES GRID ===== */
+
+.proxmox-nodes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 32px;
+    padding: 32px 0;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+/* ===== NODE CARDS ===== */
+
+.px-node-card {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.08) 0%,
+            rgba(255, 255, 255, 0.02) 100%);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: nodeCardFadeIn 0.5s ease-out forwards;
+    animation-delay: var(--anim-delay, 0s);
+    opacity: 0;
+    transform: translateY(20px);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Glass reflection */
+.px-node-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(180deg,
+            rgba(255, 255, 255, 0.06) 0%,
+            transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes nodeCardFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.px-node-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(230, 126, 34, 0.4);
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.3),
+        0 0 40px rgba(230, 126, 34, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.px-node-card.offline {
+    opacity: 0.5;
+    filter: saturate(0.5);
+}
+
+/* ===== CARD HEADER ===== */
+
+.px-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.px-node-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.px-status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--status-online);
+    box-shadow: 0 0 12px var(--status-online);
+    animation: statusPulse 2s ease-in-out infinite;
+}
+
+.px-status-dot.offline {
+    background: var(--status-offline);
+    box-shadow: 0 0 12px var(--status-offline);
+    animation: none;
+}
+
+@keyframes statusPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.2);
+    }
+}
+
+.px-node-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.px-status-badge {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+}
+
+.px-status-badge.online {
+    background: rgba(46, 204, 113, 0.15);
+    color: var(--status-online);
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.px-status-badge.offline {
+    background: rgba(231, 76, 60, 0.15);
+    color: var(--status-offline);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+/* ===== META BADGES ===== */
+
+.px-meta-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.px-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    backdrop-filter: blur(10px);
+}
+
+.px-badge svg {
+    color: var(--text-muted);
+}
+
+.px-badge.vm {
+    color: #9b59b6;
+}
+
+.px-badge.vm svg {
+    color: #9b59b6;
+}
+
+.px-badge.uptime {
+    color: #3498db;
+}
+
+.px-badge.uptime svg {
+    color: #3498db;
+}
+
+/* ===== CIRCULAR GAUGES ===== */
+
+.px-gauges {
+    display: flex;
+    justify-content: space-around;
+    gap: 16px;
+    padding: 16px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.px-gauge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.px-gauge-ring {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: conic-gradient(var(--gauge-color, var(--status-online)) calc(var(--percent, 0) * 1%),
+            rgba(255, 255, 255, 0.08) calc(var(--percent, 0) * 1%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.2),
+        inset 0 0 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Inner circle */
+.px-gauge-inner {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,
+            rgba(30, 30, 40, 0.95) 0%,
+            rgba(20, 20, 30, 0.95) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.px-gauge-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.px-gauge-percent {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.px-gauge-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.px-gauge-detail {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: -4px;
+}
+
+/* Hover glow on gauges */
+.px-gauge-ring:hover {
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.2),
+        0 0 25px color-mix(in srgb, var(--gauge-color, var(--status-online)) 40%, transparent),
+        inset 0 0 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+}
+
+/* ===== EXPAND BUTTON ===== */
+
+.px-expand-btn {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+}
+
+.px-expand-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(230, 126, 34, 0.4);
+    color: #e67e22;
+}
+
+.px-node-card.expanded .px-expand-btn svg {
+    transform: rotate(180deg);
+}
+
+/* ===== EXPANDABLE DETAILS ===== */
+
+.px-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.3s ease,
+        opacity 0.3s ease;
+    opacity: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.px-node-card.expanded .px-details {
+    max-height: 200px;
+    padding-top: 20px;
+    opacity: 1;
+}
+
+.px-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.px-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+    transition: all 0.2s ease;
+}
+
+.px-detail-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.px-detail-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.px-detail-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ===== ERROR & EMPTY STATES ===== */
+
+.proxmox-error-state,
+.proxmox-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px;
+    text-align: center;
+    color: var(--text-muted);
+    gap: 16px;
+}
+
+.proxmox-error-state svg,
+.proxmox-empty-state svg {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+.proxmox-error-state h3,
+.proxmox-empty-state h3 {
+    font-size: 1.5rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.proxmox-error-state p,
+.proxmox-empty-state p {
+    font-size: 1rem;
+    max-width: 400px;
+    margin: 0;
+}
+
+.proxmox-error-state .retry-btn {
+    background: #e67e22;
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.proxmox-error-state .retry-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+}
+
+/* ===== LIGHT THEME ===== */
+
+[data-theme="light"] .px-node-card {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.9) 0%,
+            rgba(255, 255, 255, 0.7) 100%);
+    border-color: rgba(0, 0, 0, 0.08);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+[data-theme="light"] .px-gauge-inner {
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.95) 0%,
+            rgba(245, 245, 245, 0.95) 100%);
+}
+
+[data-theme="light"] .px-badge {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .px-detail-item {
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1200px) {
+    .proxmox-nodes-grid {
+        gap: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .proxmox-nodes-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 16px 0;
+    }
+
+    .proxmox-hero .hero-title {
+        font-size: 1.8rem;
+    }
+
+    .proxmox-hero .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .px-gauges {
+        gap: 8px;
+    }
+
+    .px-gauge-ring {
+        width: 75px;
+        height: 75px;
+    }
+
+    .px-gauge-inner {
+        width: 58px;
+        height: 58px;
+    }
+
+    .px-gauge-value {
+        font-size: 1.1rem;
+    }
+}
