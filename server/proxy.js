@@ -553,10 +553,16 @@ app.get('/containers', (req, res) => {
 });
 
 // ===== Guide Pages Routes =====
+app.get('/guides/cobblemon', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'guides', 'cobblemon.html'));
+});
 app.get('/guides/cobblemon.html', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'guides', 'cobblemon.html'));
 });
 
+app.get('/guides/stoneblock4', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'guides', 'stoneblock4.html'));
+});
 app.get('/guides/stoneblock4.html', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'guides', 'stoneblock4.html'));
 });

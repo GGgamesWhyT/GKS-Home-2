@@ -20,15 +20,11 @@ LABEL description="Home dashboard with Proxmox, Jellyfin, and Jellyseerr integra
 
 WORKDIR /app
 
-# Copy frontend files
-COPY index.html servers.html styles.css app.js config.js servers.js mascot.js favicon.jpg ./
-COPY widgets/ ./widgets/
-COPY guides/ ./guides/
-COPY Logo\'s/ ./Logo\'s/
+# Copy application files
+COPY . .
+# (Note: node_modules and .env are excluded via .dockerignore)
 
-# Copy server files and dependencies
-COPY server/package*.json ./server/
-COPY server/proxy.js ./server/
+# Copy production node_modules from builder
 COPY --from=builder /app/server/node_modules ./server/node_modules
 
 # Environment variables
