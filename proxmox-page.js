@@ -13,8 +13,35 @@ class ProxmoxPage {
 
     async init() {
         this.initTheme();
+        this.initBurgerMenu();
         await this.loadNodes();
         this.intervalId = setInterval(() => this.loadNodes(), this.refreshInterval);
+    }
+
+    initBurgerMenu() {
+        const burgerBtn = document.getElementById('burger-menu');
+        const mobileNav = document.getElementById('mobile-nav');
+
+        if (!burgerBtn || !mobileNav) return;
+
+        burgerBtn.addEventListener('click', () => {
+            burgerBtn.classList.toggle('active');
+            mobileNav.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.burger-menu') && !e.target.closest('.mobile-nav')) {
+                burgerBtn.classList.remove('active');
+                mobileNav.classList.remove('active');
+            }
+        });
+
+        mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                burgerBtn.classList.remove('active');
+                mobileNav.classList.remove('active');
+            });
+        });
     }
 
     initTheme() {

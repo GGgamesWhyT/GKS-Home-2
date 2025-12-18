@@ -15,6 +15,7 @@ class Dashboard {
     async init() {
         await loadConfig();
         this.initTheme();
+        this.initBurgerMenu();
         this.initEditMode();
         this.restoreWidgetLayout();
         this.setExternalLinks();
@@ -24,6 +25,35 @@ class Dashboard {
         this.startRefreshTimers();
         window.dashboard = this;
         console.log('GKS Home Dashboard initialized');
+    }
+
+    // ===== Burger Menu =====
+    initBurgerMenu() {
+        const burgerBtn = document.getElementById('burger-menu');
+        const mobileNav = document.getElementById('mobile-nav');
+
+        if (!burgerBtn || !mobileNav) return;
+
+        burgerBtn.addEventListener('click', () => {
+            burgerBtn.classList.toggle('active');
+            mobileNav.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.burger-menu') && !e.target.closest('.mobile-nav')) {
+                burgerBtn.classList.remove('active');
+                mobileNav.classList.remove('active');
+            }
+        });
+
+        // Close menu when clicking a link
+        mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                burgerBtn.classList.remove('active');
+                mobileNav.classList.remove('active');
+            });
+        });
     }
 
     // ===== Greeting =====
@@ -453,6 +483,9 @@ class Dashboard {
             'jellyseerr-header-link': CONFIG.externalLinks.jellyseerr,
             'pyrodactyl-link': CONFIG.externalLinks.pyrodactyl,
             'portainer-link': CONFIG.externalLinks.portainer,
+            // Mobile nav links
+            'mobile-jellyfin-link': CONFIG.externalLinks.jellyfin,
+            'mobile-jellyseerr-link': CONFIG.externalLinks.jellyseerr,
         };
         Object.entries(links).forEach(([id, url]) => {
             const link = document.getElementById(id);
