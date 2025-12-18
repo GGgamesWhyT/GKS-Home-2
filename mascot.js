@@ -198,11 +198,15 @@ class MascotBuddy {
         // Build list of all patrol targets
         const targets = [];
 
-        // Add offline server cards
-        const serverCards = document.querySelectorAll('.server-showcase-card.offline, .server-card.offline, .pyrodactyl-server.offline');
+        // Add offline server cards (on servers page)
+        const serverCards = document.querySelectorAll('.server-card-v2.offline, .server-showcase-card.offline, .server-card.offline, .pyrodactyl-server.offline');
         serverCards.forEach(card => targets.push(card));
 
-        // Add Portainer widget header if containers are stopped
+        // Add stopped container cards (on containers page)
+        const stoppedContainerCards = document.querySelectorAll('.container-card.stopped');
+        stoppedContainerCards.forEach(card => targets.push(card));
+
+        // Add Portainer widget header if containers are stopped (on main dashboard)
         if (this.stoppedContainers > 0) {
             const portainerWidget = this.getPortainerWidgetHeader();
             if (portainerWidget) {
@@ -239,8 +243,14 @@ class MascotBuddy {
         };
 
         // Check for offline server cards on servers page
-        const offlineCards = document.querySelectorAll('.server-showcase-card.offline');
+        const offlineCards = document.querySelectorAll('.server-card-v2.offline, .server-showcase-card.offline');
         for (const card of offlineCards) {
+            if (isInViewport(card)) return true;
+        }
+
+        // Check for stopped container cards on containers page
+        const stoppedCards = document.querySelectorAll('.container-card.stopped');
+        for (const card of stoppedCards) {
             if (isInViewport(card)) return true;
         }
 
@@ -250,7 +260,7 @@ class MascotBuddy {
             if (pyroWidget && isInViewport(pyroWidget)) return true;
         }
 
-        // Check Portainer widget if containers are stopped
+        // Check Portainer widget if containers are stopped (legacy fallback)
         if (this.stoppedContainers > 0) {
             const portainerWidget = document.getElementById('portainer-content');
             if (portainerWidget && isInViewport(portainerWidget)) return true;
