@@ -547,6 +547,11 @@ app.get('/servers', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'servers.html'));
 });
 
+// ===== Containers Page Route =====
+app.get('/containers', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'containers.html'));
+});
+
 // ===== Guide Pages Routes =====
 app.get('/guides/cobblemon.html', (req, res) => {
     res.sendFile(path.join(__dirname, '..', 'guides', 'cobblemon.html'));
